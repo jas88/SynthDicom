@@ -285,7 +285,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
         //patient details
         ds.AddOrUpdate(DicomTag.PatientID, p.CHI);
-        ds.AddOrUpdate(DicomTag.PatientName, $"{p.Forename} {p.Surname}");
+        ds.AddOrUpdate(DicomTag.PatientName, $"{p.Surname}^{p.Forename}");
         ds.AddOrUpdate(DicomTag.PatientBirthDate, p.DateOfBirth);
 
         if (p.Address != null)
