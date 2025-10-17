@@ -7,10 +7,10 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageId>HIC.BadMedicine.Dicom</PackageId>
+		<PackageId>SynthDicom</PackageId>
 		<Authors>Health Informatics Centre - University of Dundee</Authors>
 		<PackageDescription>Generate large volumes of complex (in terms of tags) DICOM images for integration/stress testing ETL and image management tools.  BadMedicine.Dicom generates DICOM images on demand based on an anonymous aggregate model of tag data found in Scottish medical imaging with a small memory footprint.</PackageDescription>
-		<PackageProjectUrl>https://github.com/SMI/BadMedicine.Dicom</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/jas88/SynthDicom</PackageProjectUrl>
 		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
 		<Copyright>Copyright 2019</Copyright>
 		<PackageTags>DICOM,Test Data,Random,Synthetic Data,Health</PackageTags>
@@ -22,8 +22,8 @@
 <ItemGroup>
 		<PackageReference Include="fo-dicom" Version="5.2.1" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-		<PackageReference Include="HIC.SynthEHR" Version="2.0.1" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
+		<PackageReference Include="SynthEHR.Core" Version="2.0.1" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.5" />
 	</ItemGroup>
 	<ItemGroup>
