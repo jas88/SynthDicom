@@ -6,6 +6,7 @@ updates:
     interval: weekly
   reviewers:
     - SMI/reviewers
+  target-branch: "main"
 - package-ecosystem: nuget
   directory: "/"
   schedule:
@@ -13,3 +14,4 @@ updates:
   open-pull-requests-limit: 99
   reviewers:
     - SMI/reviewers
+  target-branch: "main"
