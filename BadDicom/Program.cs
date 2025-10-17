@@ -184,7 +184,7 @@ internal class Program
         }
 
 
-        var db = server.ExpectDatabase(configDatabase.DatabaseName);
+        var db = server.ExpectDatabase(configDatabase.DatabaseName ?? throw new InvalidOperationException("DatabaseName cannot be null"));
 
         if (!db.Exists())
         {
@@ -295,7 +295,7 @@ internal class Program
             tbl.MakeDistinct(500000000);
 
             Console.WriteLine( $"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pks[i]}'");
-            tbl.CreatePrimaryKey(500000000,tbl.DiscoverColumn(pks[i]));
+            tbl.CreatePrimaryKey(500000000,tbl.DiscoverColumn(pks[i] ?? throw new InvalidOperationException("Primary key column name cannot be null")));
         }
 
         Console.WriteLine("Final Row Counts:");
