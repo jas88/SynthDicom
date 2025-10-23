@@ -7,6 +7,7 @@ import re
 
 # Use command-line argument or script's parent directory
 import sys
+from pathlib import Path
 base_dir = sys.argv[1] if len(sys.argv) > 1 else str(Path(__file__).parent.parent)
 
 # Read the file
