@@ -1,6 +1,6 @@
 # SynthDicom
 
-[![NuGet Badge](https://buildstats.info/nuget/HIC.SynthDicom)](https://www.nuget.org/packages/HIC.SynthDicom/) [![Build, test and package](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml) [![CodeQL](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml)
+[![NuGet Badge](https://buildstats.info/nuget/SynthDicom)](https://www.nuget.org/packages/SynthDicom/) [![Build, test and package](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml) [![CodeQL](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml)
 
 The purpose of SynthDicom is to generate large volumes of complex (in terms of tags) dicom images for integration/stress testing ETL and image management tools.
 
@@ -14,7 +14,7 @@ SynthDicom generates dicom images on demand based on an anonymous aggregate mode
 
 ## Usage
 
-SynthDicom is available as a [nuget package](https://www.nuget.org/packages/HIC.SynthDicom/) for linking as a library
+SynthDicom is available as a [nuget package](https://www.nuget.org/packages/SynthDicom/) for linking as a library
 
 The standalone CLI (BadDicom.exe) is available in the [releases section of Github](https://github.com/jas88/SynthDicom/releases)
 
@@ -67,7 +67,7 @@ SynthEHR.exe c:\temp\testdicoms 12 100 -s 100
 _Generates a pool of 12 patients and 10 Studies (for random patients) then 100 rows of data for each EHR dataset_
 
 # Library Usage
-You can generate test data for your program yourself by referencing the [nuget package](https://www.nuget.org/packages/HIC.SynthDicom/):
+You can generate test data for your program yourself by referencing the [nuget package](https://www.nuget.org/packages/SynthDicom/):
 
 ```csharp
 //create a test person
