@@ -74,7 +74,7 @@ public class Study : IEnumerable<Series>
 
         //if we know about the frequency of StudyDescription values for this modality?
         if(stats.TagValuesByModalityAndTag.TryGetValue(modalityStats.Modality, out var descriptions))
-            StudyDescription = descriptions.GetRandom(r);
+            StudyDescription = DicomDataGeneratorStats.GetRandomStudyDescription(modalityStats.Modality, r);
 
         AccessionNumber = DicomDataGeneratorStats.GetRandomAccessionNumber(r);
         StudyTime = DicomDataGeneratorStats.Instance.GetRandomTimeOfDay(r);
@@ -107,7 +107,7 @@ public class Study : IEnumerable<Series>
 
         if (stats.DescBodyPartsByModality.TryGetValue(modalityStats.Modality, out var stat))
         {
-            part = stat.GetRandom(r);
+            part = DicomDataGeneratorStats.GetRandomDescBodyPart(stat, r);
             StudyDescription = part?.StudyDescription;
         }
 

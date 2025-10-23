@@ -52,11 +52,12 @@ public class DescBodyPartGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine("/// <summary>");
         sb.AppendLine("/// Generated from DicomDataGeneratorDescBodyPart.csv");
+        sb.AppendLine("/// Optimized with binary search for O(log n) performance");
         sb.AppendLine("/// </summary>");
         sb.AppendLine("public readonly partial record struct DescBodyPart");
         sb.AppendLine("{");
-        sb.AppendLine("    internal static readonly ReadOnlyDictionary<string, BucketList<DescBodyPart>> d =");
-        sb.AppendLine("        new Dictionary<string, BucketList<DescBodyPart>>");
+        sb.AppendLine("    internal static readonly ReadOnlyDictionary<string, (int MaxWeight, (int CumulativeWeight, DescBodyPart Value)[] Items)> d =");
+        sb.AppendLine("        new Dictionary<string, (int MaxWeight, (int CumulativeWeight, DescBodyPart Value)[] Items)>");
         sb.AppendLine("        {");
 
         bool firstModality = true;
@@ -66,33 +67,42 @@ public class DescBodyPartGenerator : IIncrementalGenerator
                 sb.AppendLine(",");
             firstModality = false;
 
-            sb.AppendLine("            {");
-            sb.AppendLine($"                \"{modalityGroup.Key}\",");
-            sb.AppendLine("                new BucketList<DescBodyPart>");
-            sb.AppendLine("                {");
-
-            bool firstEntry = true;
+            // Calculate cumulative weights for this modality
+            var entries = new List<(int cumulativeWeight, string desc)>();
+            int cumulative = 0;
             foreach (var row in modalityGroup)
             {
-                if (!firstEntry)
-                    sb.AppendLine(",");
-                firstEntry = false;
-
                 var studyDesc = row.GetValueOrDefault("StudyDescription", "");
                 var bodyPart = row.GetValueOrDefault("BodyPartExamined", "");
                 var seriesDesc = row.GetValueOrDefault("SeriesDescription", "");
-                var count = row.GetValueOrDefault("series_count", "0");
+                var count = int.Parse(row.GetValueOrDefault("series_count", "0"));
+
+                cumulative += count;
 
                 // Use raw string literals with proper escaping
                 var studyDescStr = string.IsNullOrEmpty(studyDesc) ? "\"\"" : CsvHelper.EscapeForRawString(studyDesc);
                 var bodyPartStr = string.IsNullOrEmpty(bodyPart) ? "\"\"" : $"\"{bodyPart}\"";
                 var seriesDescStr = string.IsNullOrEmpty(seriesDesc) ? "\"\"" : CsvHelper.EscapeForRawString(seriesDesc);
 
-                sb.Append($"                    {{{count},new DescBodyPart({studyDescStr},{bodyPartStr},{seriesDescStr})}}");
+                entries.Add((cumulative, $"({cumulative}, new DescBodyPart({studyDescStr},{bodyPartStr},{seriesDescStr}))"));
+            }
+
+            sb.AppendLine("            {");
+            sb.AppendLine($"                \"{modalityGroup.Key}\",");
+            sb.AppendLine($"                ({cumulative}, new (int, DescBodyPart)[]");
+            sb.AppendLine("                {");
+
+            bool firstEntry = true;
+            foreach (var (_, desc) in entries)
+            {
+                if (!firstEntry)
+                    sb.AppendLine(",");
+                firstEntry = false;
+                sb.Append($"                    {desc}");
             }
 
             sb.AppendLine();
-            sb.AppendLine("                }");
+            sb.AppendLine("                })");
             sb.Append("            }");
         }
 
