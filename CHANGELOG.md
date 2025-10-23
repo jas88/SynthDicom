@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Comprehensive XML Documentation**: 156+ doc comments for all public APIs
 - **Global Usings**: Cleaner code with centralized imports
 - **Pattern Matching**: Modern switch expressions throughout
+- **Multi-frame DICOM Support**: Generate multi-frame DICOM images from bitmap sequences for dynamic imaging
 
 ### Changed
 - Target framework: net8.0 → net9.0
@@ -45,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 30-40% faster string operations
 - 15-20% faster LINQ operations
 - ArrayPool reduces GC allocations
+- **Binary Search Optimization**: O(log n) weighted random selection for modality, study descriptions, and DescBodyPart (2000+ entries)
 
 ### Infrastructure
 - CI/CD optimized: CodeQL integrated into test workflow

@@ -35,6 +35,9 @@ internal class ProgramOptions
     [Option('m',"MaxImages",HelpText= "The maximum number of images to generate (regardless of NumberOfStudies)",Default = int.MaxValue)]
     public int MaximumImages { get; set; } = int.MaxValue;
 
+    [Option('f', "Frames", HelpText = "Number of frames to generate per image (must be 1-1000, incompatible with --csv)", Default = 1)]
+    public int Frames { get; set; } = 1;
+
     [Usage]
     public static IEnumerable<Example> Examples
     {

@@ -55,6 +55,11 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// </summary>
     public int MaximumImages { get; set; } = int.MaxValue;
 
+    /// <summary>
+    /// Number of frames to generate per image (1-1000)
+    /// </summary>
+    public int NumberOfFrames { get; set; } = 1;
+
     private FileSystemLayoutProvider _pathProvider = new(FileSystemLayout.StudyYearMonthDay);
 
     private readonly int[]? _modalities;
@@ -406,7 +411,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         ds.AddOrUpdate(new DicomAgeString(DicomTag.PatientAge, $"{age:000}Y"));
 
         if(!NoPixels)
-            PixelDrawer.DrawBlackBoxWithWhiteText(ds,500,500,sopInstanceUID.UID);
+            PixelDrawer.DrawBlackBoxWithWhiteText(ds,500,500,sopInstanceUID.UID,NumberOfFrames);
 
         // Additional DICOM tags added for the generation of CSV files
         ds.AddOrUpdate(DicomTag.ModalitiesInStudy, series.Modality);
