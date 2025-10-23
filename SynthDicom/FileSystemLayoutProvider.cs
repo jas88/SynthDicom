@@ -34,16 +34,16 @@ internal class FileSystemLayoutProvider(FileSystemLayout layout)
 
         return Layout switch
         {
-            FileSystemLayout.Flat => new FileInfo(Path.Combine(root.FullName, filename)),
+            FileSystemLayout.Flat => new FileInfo(Path.Join(root.FullName, filename)),
 
-            FileSystemLayout.StudyYearMonthDay when date.Length > 0 => new FileInfo(Path.Combine(
+            FileSystemLayout.StudyYearMonthDay when date.Length > 0 => new FileInfo(Path.Join(
                 root.FullName,
                 date[0].Year.ToString(),
                 date[0].Month.ToString(),
                 date[0].Day.ToString(),
                 filename)),
 
-            FileSystemLayout.StudyYearMonthDayAccession when date.Length > 0 && !string.IsNullOrWhiteSpace(ds.GetSingleValue<string>(DicomTag.AccessionNumber)) => new FileInfo(Path.Combine(
+            FileSystemLayout.StudyYearMonthDayAccession when date.Length > 0 && !string.IsNullOrWhiteSpace(ds.GetSingleValue<string>(DicomTag.AccessionNumber)) => new FileInfo(Path.Join(
                 root.FullName,
                 date[0].Year.ToString(),
                 date[0].Month.ToString(),
@@ -51,12 +51,12 @@ internal class FileSystemLayoutProvider(FileSystemLayout layout)
                 ds.GetSingleValue<string>(DicomTag.AccessionNumber),
                 filename)),
 
-            FileSystemLayout.StudyUID => new FileInfo(Path.Combine(
+            FileSystemLayout.StudyUID => new FileInfo(Path.Join(
                 root.FullName,
                 ds.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID).UID,
                 filename)),
 
-            _ => new FileInfo(Path.Combine(root.FullName, filename))
+            _ => new FileInfo(Path.Join(root.FullName, filename))
         };
     }
 

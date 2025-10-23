@@ -90,7 +90,7 @@ internal class Program
             var identifiers = GetPeople(opts, out var r);
             using var dicomGenerator = GetDataGenerator(opts,r, out var dir);
             Console.WriteLine($"{DateTime.Now} Starting file generation (to {dir?.FullName ?? "/dev/null"})" );
-            var targetFile = new FileInfo(dir==null?RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null" :Path.Combine(dir.FullName, "DicomFiles.csv"));
+            var targetFile = new FileInfo(dir==null?RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null" :Path.Join(dir.FullName, "DicomFiles.csv"));
             dicomGenerator.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfStudies);
         }
         catch (Exception e)

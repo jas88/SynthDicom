@@ -13,9 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **BREAKING CHANGES:**
 - Project renamed from BadMedicine.Dicom to SynthDicom
-- Package ID remains HIC.SynthDicom for compatibility
+- **Package ID changed**: HIC.BadMedicine.Dicom → SynthDicom
 - Upgraded to .NET 9 (net9.0)
 - All dependencies updated
+- NuGet package now published as `SynthDicom` (not HIC.SynthDicom)
 
 ### Added
 - **Async Streaming**: IAsyncEnumerable<T> support for memory-efficient large dataset generation

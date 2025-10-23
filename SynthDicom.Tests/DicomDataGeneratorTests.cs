@@ -22,10 +22,10 @@ public class DicomDataGeneratorTests
         Assert.That(studyUid, Is.Not.Null, "Study UID should not be null");
 
         //should be a directory named after the Study UID
-        Assert.That(Directory.Exists(Path.Combine(TestContext.CurrentContext.WorkDirectory, studyUid)));
+        Assert.That(Directory.Exists(Path.Join(TestContext.CurrentContext.WorkDirectory, studyUid)));
 
         //should be a single file
-        var f = new FileInfo(Directory.GetFiles(Path.Combine(TestContext.CurrentContext.WorkDirectory, studyUid)).Single());
+        var f = new FileInfo(Directory.GetFiles(Path.Join(TestContext.CurrentContext.WorkDirectory, studyUid)).Single());
         Assert.That(f.Exists);
 
         var datasetCreated = DicomFile.Open(f.FullName);
@@ -143,7 +143,7 @@ public class DicomDataGeneratorTests
     {
         var r = new Random(500);
 
-        var outputDir = new DirectoryInfo(Path.Combine(TestContext.CurrentContext.WorkDirectory, nameof(Test_CsvOption)));
+        var outputDir = new DirectoryInfo(Path.Join(TestContext.CurrentContext.WorkDirectory, nameof(Test_CsvOption)));
         if (outputDir.Exists)
             outputDir.Delete(true);
         outputDir.Create();
@@ -156,7 +156,7 @@ public class DicomDataGeneratorTests
         generator.NoPixels = true;
         generator.MaximumImages = 500;
 
-        generator.GenerateTestDataFile(people, new FileInfo(Path.Combine(outputDir.FullName, "index.csv")), 500);
+        generator.GenerateTestDataFile(people, new FileInfo(Path.Join(outputDir.FullName, "index.csv")), 500);
 
         //3 csv files + index.csv (the default one
         Assert.That(outputDir.GetFiles(), Has.Length.EqualTo(4));

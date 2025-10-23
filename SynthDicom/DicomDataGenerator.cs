@@ -460,9 +460,9 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
         if (OutputDir == null) return;
         // Create/open CSV files
-        _studyWriter = new CsvWriter(new StreamWriter(Path.Combine(OutputDir.FullName, StudyCsvFilename)),CultureInfo.CurrentCulture);
-        _seriesWriter = new CsvWriter(new StreamWriter(Path.Combine(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.CurrentCulture);
-        _imageWriter = new CsvWriter(new StreamWriter(Path.Combine(OutputDir.FullName, ImageCsvFilename)),CultureInfo.CurrentCulture);
+        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)),CultureInfo.CurrentCulture);
+        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.CurrentCulture);
+        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)),CultureInfo.CurrentCulture);
 
         // Write header
         WriteData(_studyWriter, StudyTags.Select(i => i.DictionaryEntry.Keyword));
