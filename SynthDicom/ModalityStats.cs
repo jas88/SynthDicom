@@ -1,5 +1,4 @@
-﻿using System;
-using SynthDicom.Statistics.Distributions;
+﻿using SynthDicom.Statistics.Distributions;
 
 namespace SynthDicom;
 

@@ -1,11 +1,8 @@
-﻿using FellowOakDicom;
-using NUnit.Framework;
-using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CsvHelper;
-using SynthEHR;
 
 namespace SynthDicom.Tests;
 
@@ -177,5 +174,123 @@ public class DicomDataGeneratorTests
             if (f.Name == DicomDataGenerator.ImageCsvFilename)
                 Assert.That(rowcount, Is.EqualTo(501));
         }
+    }
+
+    [Test]
+    public async Task Test_GenerateStudyImagesAsync_StreamsDatasets()
+    {
+        // Arrange
+        var r = new Random(500);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = true };
+        var person = new Person(r);
+
+        // Act
+        var datasetCount = 0;
+        Study? capturedStudy = null;
+        await foreach (var (dataset, study) in generator.GenerateStudyImagesAsync(person))
+        {
+            // Assert each dataset
+            Assert.That(dataset, Is.Not.Null);
+            Assert.That(dataset.Contains(DicomTag.StudyInstanceUID));
+            Assert.That(dataset.Contains(DicomTag.SeriesInstanceUID));
+            Assert.That(dataset.Contains(DicomTag.SOPInstanceUID));
+            Assert.That(dataset.GetSingleValue<string>(DicomTag.PatientID), Is.EqualTo(person.CHI));
+
+            capturedStudy = study;
+            datasetCount++;
+        }
+
+        // Assert
+        Assert.That(datasetCount, Is.GreaterThan(0), "Should generate at least one dataset");
+        Assert.That(capturedStudy, Is.Not.Null, "Study should be captured");
+    }
+
+    [Test]
+    public async Task Test_GenerateStudyImagesAsync_SupportsCancellation()
+    {
+        // Arrange
+        var r = new Random(500);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = true };
+        var person = new Person(r);
+        using var cts = new CancellationTokenSource();
+
+        // Act & Assert
+        var datasetCount = 0;
+        var cancelled = false;
+
+        try
+        {
+            await foreach (var (dataset, study) in generator.GenerateStudyImagesAsync(person, cts.Token))
+            {
+                datasetCount++;
+
+                // Cancel after first dataset
+                if (datasetCount == 1)
+                {
+                    cts.Cancel();
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            cancelled = true;
+        }
+
+        // Assert - cancellation should have occurred and we processed at least one dataset
+        Assert.Multiple(() =>
+        {
+            Assert.That(cancelled, Is.True, "Cancellation should have been triggered");
+            Assert.That(datasetCount, Is.GreaterThanOrEqualTo(1), "Should process at least one dataset before cancellation");
+        });
+    }
+
+    [Test]
+    public async Task Test_GenerateTestDatasetAsync_CreatesValidDataset()
+    {
+        // Arrange
+        var r = new Random(23);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = true };
+
+        // Act
+        var dataset = await generator.GenerateTestDatasetAsync(person, r);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(dataset, Is.Not.Null);
+            Assert.That(dataset.GetValue<string>(DicomTag.PatientID, 0), Is.EqualTo(person.CHI));
+            Assert.That(dataset.GetValue<DateTime>(DicomTag.StudyDate, 0), Is.GreaterThanOrEqualTo(person.DateOfBirth));
+            Assert.That(dataset.GetSingleValue<string>(DicomTag.Modality), Is.EqualTo("CT"));
+            Assert.That(dataset.GetValue<string>(DicomTag.StudyDescription, 0), Is.Not.Null);
+            Assert.That(dataset.Contains(DicomTag.StudyTime));
+        });
+    }
+
+    [Test]
+    public async Task Test_GenerateStudyImagesAsync_ConsistentWithSynchronousVersion()
+    {
+        // Arrange - use same seed for both
+        var r1 = new Random(42);
+        var r2 = new Random(42);
+        var person1 = new Person(r1);
+        var person2 = new Person(r2);
+
+        using var generator1 = new DicomDataGenerator(r1, null, "CT") { NoPixels = true };
+        using var generator2 = new DicomDataGenerator(r2, null, "CT") { NoPixels = true };
+
+        // Act - Generate synchronously
+        var syncDatasets = generator1.GenerateStudyImages(person1, out var syncStudy);
+
+        // Act - Generate asynchronously
+        var asyncDatasets = new System.Collections.Generic.List<DicomDataset>();
+        await foreach (var (dataset, study) in generator2.GenerateStudyImagesAsync(person2))
+        {
+            asyncDatasets.Add(dataset);
+        }
+
+        // Assert - Both should generate the same number of datasets
+        Assert.That(asyncDatasets.Count, Is.EqualTo(syncDatasets.Length),
+            "Async and sync versions should generate the same number of datasets");
     }
 }

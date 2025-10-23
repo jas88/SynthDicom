@@ -31,8 +31,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-using System;
-
 namespace SynthDicom.Statistics.Distributions;
 
 /// <summary>
@@ -56,6 +54,8 @@ internal sealed class Normal : IContinuousDistribution
     /// <param name="randomSource">The random number generator which is used to draw random samples.</param>
     public Normal(double mean,double stddev,Random randomSource)
     {
+        ArgumentNullException.ThrowIfNull(randomSource);
+
         if (!IsValidParameterSet(mean,stddev))
         {
             throw new ArgumentException(
@@ -63,7 +63,7 @@ internal sealed class Normal : IContinuousDistribution
                 $"Standard deviation must be >= 0 and mean must not be NaN.");
         }
 
-        _random = randomSource ?? new Random();
+        _random = randomSource;
         _mean = mean;
         _stdDev = stddev;
     }
@@ -72,20 +72,15 @@ internal sealed class Normal : IContinuousDistribution
     /// A string representation of the distribution.
     /// </summary>
     /// <returns>a string representation of the distribution.</returns>
-    public override string ToString()
-    {
-        return $"Normal(μ = {_mean}, σ = {_stdDev})";
-    }
+    public override string ToString() => $"Normal(μ = {_mean}, σ = {_stdDev})";
 
     /// <summary>
     /// Tests whether the provided values are valid parameters for this distribution.
     /// </summary>
     /// <param name="mean">The mean (μ) of the normal distribution.</param>
     /// <param name="stddev">The standard deviation (σ) of the normal distribution. Range: σ ≥ 0.</param>
-    private static bool IsValidParameterSet(double mean,double stddev)
-    {
-        return stddev >= 0.0 && !double.IsNaN(mean);
-    }
+    private static bool IsValidParameterSet(double mean,double stddev) =>
+        stddev >= 0.0 && !double.IsNaN(mean);
 
     /// <summary>
     /// Gets the mean (μ) of the normal distribution.
@@ -147,10 +142,7 @@ internal sealed class Normal : IContinuousDistribution
     /// Generates a sample from the normal distribution using the <i>Box-Muller</i> algorithm.
     /// </summary>
     /// <returns>a sample from the distribution.</returns>
-    public double Sample()
-    {
-        return SampleUnchecked(_random,_mean,_stdDev);
-    }
+    public double Sample() => SampleUnchecked(_random,_mean,_stdDev);
 
     internal static double SampleUnchecked(Random rnd,double mean,double stddev)
     {

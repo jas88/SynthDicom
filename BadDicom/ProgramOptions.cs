@@ -1,7 +1,5 @@
-﻿using SynthDicom;
-using CommandLine;
+﻿using CommandLine;
 using CommandLine.Text;
-using System.Collections.Generic;
 
 namespace BadDicom;
 

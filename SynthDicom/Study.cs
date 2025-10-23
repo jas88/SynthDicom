@@ -1,8 +1,4 @@
-﻿using FellowOakDicom;
-using SynthEHR;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 
 namespace SynthDicom;
 
@@ -40,7 +36,7 @@ public class Study : IEnumerable<Series>
     /// <summary>
     /// The Accession Number for this Study, usually used to associate the study with clinical data in the RIS
     /// </summary>
-    public string AccessionNumber { get; }
+    public string? AccessionNumber { get; }
     /// <summary>
     /// Starting time of the Study, empty if unknown
     /// </summary>
@@ -62,6 +58,9 @@ public class Study : IEnumerable<Series>
     /// <param name="r">Seeded PRNG to use</param>
     public Study(DicomDataGenerator parent, Person person, ModalityStats modalityStats, Random r)
     {
+        ArgumentNullException.ThrowIfNull(parent);
+        ArgumentNullException.ThrowIfNull(person);
+
         /////////////////////// Generate all the Study Values ////////////////////
         Parent = parent;
         StudyUID = UIDAllocator.GenerateStudyInstanceUID();

@@ -15,6 +15,8 @@
 | SixLabors.ImageSharp | [GitHub](https://github.com/SixLabors/ImageSharp) | [Apache 2.0](https://github.com/SixLabors/ImageSharp/blob/main/LICENSE) | Platform-independent replacement for legacy Windows-only System.Drawing.Common | |
 | SixLabors.ImageSharp.Drawing | [GitHub](https://github.com/SixLabors/ImageSharp.Drawing) | [Apache 2.0](https://github.com/SixLabors/ImageSharp/blob/main/LICENSE) | Font handling for ImageSharp | |
 | Microsoft.SourceLink.GitHub | [GitHub](https://github.com/dotnet/sourcelink) | [Apache License 2.0](https://github.com/dotnet/sourcelink/blob/master/License.txt) | Enables source debugging of project nuget package| |
+| Microsoft.CodeAnalysis.CSharp | [GitHub](https://github.com/dotnet/roslyn) | [MIT](https://opensource.org/licenses/MIT) | Roslyn C# compiler for source generators | |
+| Microsoft.CodeAnalysis.Analyzers | [GitHub](https://github.com/dotnet/roslyn-analyzers) | [MIT](https://opensource.org/licenses/MIT) | Code analyzers for source generator development | |
 | Microsoft.NETCore.App | [GitHub](https://github.com/dotnet/runtime) |[MIT](https://opensource.org/licenses/MIT) | | .Net Core API|
 | HIC.DicomTypeTranslation | [GitHub](https://github.com/jas88/DicomTypeTranslation)  | [GPL 3.0](https://github.com/jas88/DicomTypeTranslation/blob/master/LICENSE) | Translates DICOM type representations | |
 | YamlDotNet | [GitHub](https://github.com/aaubry/YamlDotNet)  | [MIT](https://opensource.org/licenses/MIT) |Loading configuration files|

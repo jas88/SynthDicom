@@ -1,7 +1,4 @@
-﻿using SynthDicom;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using YamlDotNet.Serialization;
 
 namespace BadDicom.Configuration;
@@ -48,10 +45,8 @@ public sealed class ExplicitUIDs
             UIDAllocator.SOPUIDs.Enqueue(u);
     }
 
-    private static IEnumerable<string> GetUIDsFrom(string? path)
-    {
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return [];
-
-        return File.ReadLines(path).Where(static l => !string.IsNullOrWhiteSpace(l));
-    }
+    private static IEnumerable<string> GetUIDsFrom(string? path) =>
+        string.IsNullOrWhiteSpace(path) || !File.Exists(path)
+            ? []
+            : File.ReadLines(path).Where(static l => !string.IsNullOrWhiteSpace(l));
 }

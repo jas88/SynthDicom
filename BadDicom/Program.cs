@@ -1,11 +1,7 @@
-using SynthDicom;
 using CommandLine;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BadDicom.Configuration;
@@ -18,7 +14,6 @@ using FAnsi.Implementations.MySql;
 using FAnsi.Implementations.Oracle;
 using FAnsi.Implementations.PostgreSql;
 using YamlDotNet.Serialization;
-using SynthEHR;
 
 namespace BadDicom;
 
