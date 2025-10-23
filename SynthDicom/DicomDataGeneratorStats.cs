@@ -272,7 +272,7 @@ internal sealed class DicomDataGeneratorStats
     public ModalityStats GetRandomModality(Random r) => GetRandomValue(ModalityFrequency, r);
 
     /// <summary>
-    /// Gets a random modality from a subset of indices - O(n*log n) performance
+    /// Gets a random modality from a subset of indices - O(n) performance
     /// </summary>
     public ModalityStats GetRandomModality(int[] indices, Random r)
     {
