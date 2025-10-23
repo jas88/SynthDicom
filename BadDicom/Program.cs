@@ -84,6 +84,27 @@ internal class Program
             }
         }
 
+        // Validate Frames option
+        if (opts.Frames < 1)
+        {
+            Console.WriteLine("Error: Frame count must be at least 1");
+            _returnCode = -4;
+            return;
+        }
+
+        if (opts.Frames > 1000)
+        {
+            Console.WriteLine("Error: Frame count cannot exceed 1000 (memory constraints)");
+            _returnCode = -5;
+            return;
+        }
+
+        if (opts.csv && opts.Frames > 1)
+        {
+            Console.WriteLine("Error: Cannot use --Frames with --csv (CSV mode doesn't generate images)");
+            _returnCode = -6;
+            return;
+        }
 
         try
         {
@@ -117,7 +138,8 @@ internal class Program
             Anonymise = opts.Anonymise,
             Layout = opts.Layout,
             MaximumImages = opts.MaximumImages,
-            Csv = opts.csv
+            Csv = opts.csv,
+            NumberOfFrames = opts.Frames
         };
     }
 

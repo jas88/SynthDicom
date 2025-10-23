@@ -293,4 +293,305 @@ public class DicomDataGeneratorTests
         Assert.That(asyncDatasets.Count, Is.EqualTo(syncDatasets.Length),
             "Async and sync versions should generate the same number of datasets");
     }
+
+    [Test]
+    public void Test_MultiFrame_GeneratesTwoFrames()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 2 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.NumberOfFrames), "Should have NumberOfFrames tag");
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(2), "Should have 2 frames");
+            Assert.That(ds.Contains(DicomTag.FrameTime), "Should have FrameTime tag");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_GeneratesTenFrames()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 10 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.NumberOfFrames), "Should have NumberOfFrames tag");
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(10), "Should have 10 frames");
+            Assert.That(ds.GetSingleValue<decimal>(DicomTag.FrameTime), Is.EqualTo(100.0m).Within(0.1m), "Frame time should be 100ms (10fps)");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_SingleFrameHasNoFrameTag()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 1 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.That(ds.Contains(DicomTag.NumberOfFrames), Is.False, "Single frame should not have NumberOfFrames tag");
+    }
+
+    [Test]
+    public void Test_MultiFrame_WithNoPixels()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = true, NumberOfFrames = 5 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.That(ds.Contains(DicomTag.PixelData), Is.False, "NoPixels should bypass all frame generation");
+    }
+
+    [Test]
+    public void Test_MultiFrame_GeneratesFiveFrames()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 5 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.NumberOfFrames), "Should have NumberOfFrames tag");
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(5), "Should have 5 frames");
+            Assert.That(ds.Contains(DicomTag.FrameTime), "Should have FrameTime tag for multi-frame");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_VerifyPixelDataContainsMultipleFrames()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 3 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.PixelData), "Should have pixel data");
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(3));
+
+            // Verify pixel data buffer is sized correctly for multiple frames
+            var pixelData = ds.GetDicomItem<DicomElement>(DicomTag.PixelData);
+            Assert.That(pixelData, Is.Not.Null, "Pixel data element should exist");
+
+            var rows = ds.GetSingleValue<int>(DicomTag.Rows);
+            var cols = ds.GetSingleValue<int>(DicomTag.Columns);
+            var samplesPerPixel = ds.GetSingleValue<int>(DicomTag.SamplesPerPixel);
+            var expectedSize = rows * cols * samplesPerPixel * 3; // 3 frames
+
+            Assert.That(pixelData.Buffer.Size, Is.EqualTo(expectedSize),
+                "Pixel data size should match rows * cols * samplesPerPixel * numberOfFrames");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_BackwardCompatibility_DefaultIsSingleFrame()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        // Don't set NumberOfFrames - should default to 1
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.NumberOfFrames), Is.False,
+                "Single frame (default) should not have NumberOfFrames tag");
+            Assert.That(ds.Contains(DicomTag.PixelData), "Should still have pixel data");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_FrameTimeCalculation()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 30 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.FrameTime), "Should have FrameTime tag");
+            var frameTime = ds.GetSingleValue<decimal>(DicomTag.FrameTime);
+            // 30 fps = 33.33ms per frame
+            Assert.That(frameTime, Is.EqualTo(33.33m).Within(0.01m),
+                "Frame time for 30 frames should be ~33.33ms (30fps)");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_WithDifferentModalities()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+
+        // Test MR modality with multi-frame
+        using var mrGenerator = new DicomDataGenerator(r, null, "MR") { NoPixels = false, NumberOfFrames = 4 };
+        var mrDs = mrGenerator.GenerateTestDataset(person, r);
+
+        // Test CT modality with multi-frame
+        using var ctGenerator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 4 };
+        var ctDs = ctGenerator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(mrDs.GetSingleValue<string>(DicomTag.Modality), Is.EqualTo("MR"));
+            Assert.That(mrDs.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(4));
+
+            Assert.That(ctDs.GetSingleValue<string>(DicomTag.Modality), Is.EqualTo("CT"));
+            Assert.That(ctDs.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(4));
+        });
+    }
+
+    [Test]
+    public async Task Test_MultiFrame_AsyncGeneration()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 3 };
+
+        var ds = await generator.GenerateTestDatasetAsync(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.Contains(DicomTag.NumberOfFrames), "Async generated dataset should have NumberOfFrames tag");
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(3));
+        });
+    }
+
+    [Test]
+    public async Task Test_MultiFrame_StudyImagesAsync()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 2 };
+
+        var frameCountsFound = new HashSet<int>();
+
+        await foreach (var (dataset, study) in generator.GenerateStudyImagesAsync(person))
+        {
+            if (dataset.Contains(DicomTag.NumberOfFrames))
+            {
+                frameCountsFound.Add(dataset.GetSingleValue<int>(DicomTag.NumberOfFrames));
+            }
+        }
+
+        Assert.That(frameCountsFound, Contains.Item(2),
+            "All images in study should have 2 frames when NumberOfFrames is set to 2");
+    }
+
+    [Test]
+    public void Test_MultiFrame_OnDiskGeneration()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, TestContext.CurrentContext.WorkDirectory)
+        {
+            Layout = FileSystemLayout.StudyUID,
+            MaximumImages = 1,
+            NumberOfFrames = 5,
+            NoPixels = false
+        };
+
+        var studyUid = (string?)generator.GenerateTestDataRow(person)[0];
+        Assert.That(studyUid, Is.Not.Null, "Study UID should not be null");
+
+        var f = new FileInfo(Directory.GetFiles(Path.Join(TestContext.CurrentContext.WorkDirectory, studyUid)).Single());
+        var datasetCreated = DicomFile.Open(f.FullName);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(datasetCreated.Dataset.Contains(DicomTag.NumberOfFrames),
+                "Saved file should contain NumberOfFrames tag");
+            Assert.That(datasetCreated.Dataset.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(5),
+                "Saved file should have correct number of frames");
+            Assert.That(datasetCreated.Dataset.Contains(DicomTag.PixelData),
+                "Saved file should contain pixel data");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_GenerateStudyImages()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 7 };
+
+        var datasets = generator.GenerateStudyImages(person, out var study);
+
+        Assert.That(datasets.Length, Is.GreaterThan(0), "Should generate at least one dataset");
+
+        // All images in the study should have the same frame count
+        foreach (var ds in datasets)
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(ds.Contains(DicomTag.NumberOfFrames), "Each dataset should have NumberOfFrames tag");
+                Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(7),
+                    "Each dataset should have 7 frames");
+            });
+        }
+    }
+
+    [Test]
+    public void Test_MultiFrame_LargeFrameCount()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = false, NumberOfFrames = 100 };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(100));
+            Assert.That(ds.Contains(DicomTag.PixelData), "Should have pixel data even with 100 frames");
+
+            // Verify frame time for 100 frames
+            var frameTime = ds.GetSingleValue<decimal>(DicomTag.FrameTime);
+            Assert.That(frameTime, Is.EqualTo(10.0m).Within(0.1m),
+                "Frame time for 100 frames should be 10ms (100fps)");
+        });
+    }
+
+    [Test]
+    public void Test_MultiFrame_WithAnonymization()
+    {
+        var r = new Random(500);
+        var person = new Person(r);
+        using var generator = new DicomDataGenerator(r, null, "CT")
+        {
+            NoPixels = false,
+            NumberOfFrames = 3,
+            Anonymise = true
+        };
+
+        var ds = generator.GenerateTestDataset(person, r);
+
+        Assert.Multiple(() =>
+        {
+            // Multi-frame tags should still be present
+            Assert.That(ds.Contains(DicomTag.NumberOfFrames), "NumberOfFrames should be present even with anonymization");
+            Assert.That(ds.GetSingleValue<int>(DicomTag.NumberOfFrames), Is.EqualTo(3));
+
+            // Patient data should be anonymized
+            Assert.That(ds.GetString(DicomTag.PatientID), Is.EqualTo(string.Empty),
+                "Patient ID should be anonymized");
+        });
+    }
 }
