@@ -1,7 +1,7 @@
 ﻿using FellowOakDicom;
 using System.Collections.Concurrent;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// Allocates <see cref="DicomUID"/> values from an explicit list(s) or

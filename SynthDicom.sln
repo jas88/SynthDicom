@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadMedicine.Dicom", "BadMedicine.Dicom\BadMedicine.Dicom.csproj", "{7B4D844C-6862-4354-A33D-B57ACE1CEC14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthDicom", "SynthDicom\SynthDicom.csproj", "{7B4D844C-6862-4354-A33D-B57ACE1CEC14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadMedicine.Dicom.Tests", "BadMedicine.Dicom.Tests\BadMedicine.Dicom.Tests.csproj", "{34EEE27B-B23C-428D-8692-4B8E83A647DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthDicom.Tests", "SynthDicom.Tests\SynthDicom.Tests.csproj", "{34EEE27B-B23C-428D-8692-4B8E83A647DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadDicom", "BadDicom\BadDicom.csproj", "{42571121-94E1-49BB-A733-2A34ED311061}"
 EndProject

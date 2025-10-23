@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 internal class FileSystemLayoutProvider
 {

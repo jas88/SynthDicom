@@ -4,12 +4,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// Represents a whole DICOM Study (a collection of Series objects).
 /// Stores the DICOM tags that fit at the study/patient level hierarchy
-/// (and are modelled by BadMedicine.Dicom).
+/// (and are modelled by SynthDicom).
 /// </summary>
 public class Study : IEnumerable<Series>
 {

@@ -7,7 +7,7 @@ using System.Linq;
 using CsvHelper;
 using SynthEHR;
 
-namespace BadMedicine.Dicom.Tests;
+namespace SynthDicom.Tests;
 
 public class DicomDataGeneratorTests
 {

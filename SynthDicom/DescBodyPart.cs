@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using FellowOakDicom;
 using SynthEHR;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// <para>

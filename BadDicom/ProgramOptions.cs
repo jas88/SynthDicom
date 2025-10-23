@@ -1,4 +1,4 @@
-﻿using BadMedicine.Dicom;
+﻿using SynthDicom;
 using CommandLine;
 using CommandLine.Text;
 using System.Collections.Generic;

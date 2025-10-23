@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using CsvHelper;
 using SynthEHR;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// <see cref="DataGenerator"/> which produces dicom files on disk and accompanying metadata

@@ -33,7 +33,7 @@
 
 using System;
 
-namespace BadMedicine.Dicom.Statistics.Distributions;
+namespace SynthDicom.Statistics.Distributions;
 
 /// <summary>
 /// Continuous Univariate Normal distribution, also known as Gaussian distribution.

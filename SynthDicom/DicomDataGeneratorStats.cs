@@ -6,7 +6,7 @@ using System.Data;
 using SynthEHR.Datasets;
 using SynthEHR;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 internal sealed class DicomDataGeneratorStats
 {

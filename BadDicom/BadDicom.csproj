@@ -27,6 +27,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BadMedicine.Dicom\BadMedicine.Dicom.csproj" />
+    <ProjectReference Include="..\SynthDicom\SynthDicom.csproj" />
   </ItemGroup>
 </Project>

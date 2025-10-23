@@ -1,7 +1,7 @@
 ﻿using System;
-using BadMedicine.Dicom.Statistics.Distributions;
+using SynthDicom.Statistics.Distributions;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// A set of statistical distribution parameters for a specific Modality

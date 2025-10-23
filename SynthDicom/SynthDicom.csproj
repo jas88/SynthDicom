@@ -3,10 +3,10 @@
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageId>HIC.BadMedicine.Dicom</PackageId>
+		<PackageId>HIC.SynthDicom</PackageId>
 		<Authors>Health Informatics Centre - University of Dundee</Authors>
-		<PackageDescription>Generate large volumes of complex (in terms of tags) DICOM images for integration/stress testing ETL and image management tools.  BadMedicine.Dicom generates DICOM images on demand based on an anonymous aggregate model of tag data found in Scottish medical imaging with a small memory footprint.</PackageDescription>
-		<PackageProjectUrl>https://github.com/SMI/BadMedicine.Dicom</PackageProjectUrl>
+		<PackageDescription>Generate large volumes of complex (in terms of tags) DICOM images for integration/stress testing ETL and image management tools.  SynthDicom generates DICOM images on demand based on an anonymous aggregate model of tag data found in Scottish medical imaging with a small memory footprint.</PackageDescription>
+		<PackageProjectUrl>https://github.com/jas88/SynthDicom</PackageProjectUrl>
 		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
 		<Copyright>Copyright 2019</Copyright>
 		<PackageTags>DICOM,Test Data,Random,Synthetic Data,Health</PackageTags>

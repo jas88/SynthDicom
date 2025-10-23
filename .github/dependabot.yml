@@ -19,3 +19,13 @@ updates:
       - "dependencies"
       - "github-actions"
     target-branch: "main"
+
+  - package-ecosystem: "dotnet-sdk"
+    directory: "/"
+    schedule:
+      interval: weekly
+    reviewers: []
+    labels:
+      - "dependencies"
+      - "dotnet-sdk"
+    target-branch: "main"
