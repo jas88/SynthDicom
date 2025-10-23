@@ -299,7 +299,7 @@ internal class Program
             var pkColumn = tbl.DiscoverColumn(pk);
             if (pkColumn == null)
             {
-                Console.WriteLine($"Error: Could not find column '{pk}' in table '{tables[i].GetFullyQualifiedName()}'. Skipping primary key creation.");
+                Console.WriteLine($"Error: Could not find column '{pk}' in table '{tbl.GetFullyQualifiedName()}'. Skipping primary key creation.");
                 continue;
             }
             tbl.CreatePrimaryKey(500000000, pkColumn);
