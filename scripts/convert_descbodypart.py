@@ -5,8 +5,12 @@ Convert DescBodyPart.cs from BucketList to optimized binary search arrays
 
 import re
 
+# Use command-line argument or script's parent directory
+import sys
+base_dir = sys.argv[1] if len(sys.argv) > 1 else str(Path(__file__).parent.parent)
+
 # Read the file
-with open('/Users/jas88/Developer/SynthDicom/SynthDicom/DescBodyPart.cs', 'r') as f:
+with open(f'{base_dir}/SynthDicom/DescBodyPart.cs', 'r') as f:
     content = f.read()
 
 # Replace the static field declaration
@@ -62,7 +66,7 @@ replacement = r'''\1.AsReadOnly();
 content = re.sub(pattern, replacement, content)
 
 # Write the modified content
-with open('/Users/jas88/Developer/SynthDicom/SynthDicom/DescBodyPart.cs', 'w') as f:
+with open(f'{base_dir}/SynthDicom/DescBodyPart.cs', 'w') as f:
     f.write(content)
 
 print("DescBodyPart.cs has been successfully converted to use binary search optimization!")

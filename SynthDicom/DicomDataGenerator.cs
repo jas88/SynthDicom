@@ -328,17 +328,15 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// <param name="_r">Random number generator</param>
     /// <param name="ct">Cancellation token for cooperative cancellation</param>
     /// <returns>Task containing the generated DICOM dataset</returns>
-    public async Task<DicomDataset> GenerateTestDatasetAsync(Person p, Random _r, CancellationToken ct = default)
+    public Task<DicomDataset> GenerateTestDatasetAsync(Person p, Random _r, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(p);
 
-        // Allow cooperative cancellation
-        await Task.Yield();
         ct.ThrowIfCancellationRequested();
 
         //get a random modality
         var modality = GetRandomModality(_r);
-        return GenerateTestDataset(p,new Study(this,p,modality,_r).Series[0]);
+        return Task.FromResult(GenerateTestDataset(p,new Study(this,p,modality,_r).Series[0]));
     }
 
     private ModalityStats GetRandomModality(Random _r) =>

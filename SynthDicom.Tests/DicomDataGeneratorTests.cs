@@ -283,7 +283,7 @@ public class DicomDataGeneratorTests
         var syncDatasets = generator1.GenerateStudyImages(person1, out var syncStudy);
 
         // Act - Generate asynchronously
-        var asyncDatasets = new System.Collections.Generic.List<DicomDataset>();
+        var asyncDatasets = new List<DicomDataset>();
         await foreach (var (dataset, study) in generator2.GenerateStudyImagesAsync(person2))
         {
             asyncDatasets.Add(dataset);
