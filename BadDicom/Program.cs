@@ -1,11 +1,7 @@
-using BadMedicine.Dicom;
 using CommandLine;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BadDicom.Configuration;
@@ -18,7 +14,6 @@ using FAnsi.Implementations.MySql;
 using FAnsi.Implementations.Oracle;
 using FAnsi.Implementations.PostgreSql;
 using YamlDotNet.Serialization;
-using SynthEHR;
 
 namespace BadDicom;
 
@@ -95,7 +90,7 @@ internal class Program
             var identifiers = GetPeople(opts, out var r);
             using var dicomGenerator = GetDataGenerator(opts,r, out var dir);
             Console.WriteLine($"{DateTime.Now} Starting file generation (to {dir?.FullName ?? "/dev/null"})" );
-            var targetFile = new FileInfo(dir==null?RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null" :Path.Combine(dir.FullName, "DicomFiles.csv"));
+            var targetFile = new FileInfo(dir==null?RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null" :Path.Join(dir.FullName, "DicomFiles.csv"));
             dicomGenerator.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfStudies);
         }
         catch (Exception e)
@@ -183,6 +178,11 @@ internal class Program
             return -2;
         }
 
+        if (string.IsNullOrWhiteSpace(configDatabase.DatabaseName))
+        {
+            Console.WriteLine("Database name must be specified in configuration");
+            return -3;
+        }
 
         var db = server.ExpectDatabase(configDatabase.DatabaseName);
 
@@ -287,15 +287,22 @@ internal class Program
 
         for (var i = 0; i < tables.Length; i++)
         {
-            if(pks[i] == null)
+            var pk = pks[i];
+            if(pk == null)
                 continue;
 
             Console.WriteLine( $"{DateTime.Now} Making table '{tables[i]}' distinct (this may take a long time)");
             var tbl = tables[i];
             tbl.MakeDistinct(500000000);
 
-            Console.WriteLine( $"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pks[i]}'");
-            tbl.CreatePrimaryKey(500000000,tbl.DiscoverColumn(pks[i]));
+            Console.WriteLine( $"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pk}'");
+            var pkColumn = tbl.DiscoverColumn(pk);
+            if (pkColumn == null)
+            {
+                Console.WriteLine($"Error: Could not find column '{pk}' in table '{tbl.GetFullyQualifiedName()}'. Skipping primary key creation.");
+                continue;
+            }
+            tbl.CreatePrimaryKey(500000000, pkColumn);
         }
 
         Console.WriteLine("Final Row Counts:");

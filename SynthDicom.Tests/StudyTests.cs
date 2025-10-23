@@ -1,9 +1,4 @@
-﻿using FellowOakDicom;
-using NUnit.Framework;
-using SynthEHR;
-using System;
-
-namespace BadMedicine.Dicom.Tests;
+﻿namespace SynthDicom.Tests;
 
 internal class StudyTests
 {

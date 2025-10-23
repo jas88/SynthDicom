@@ -1,9 +1,9 @@
-﻿// <copyright file="IContinuousDistribution.cs" company="Math.NET">
+﻿// <copyright file="IUnivariateDistribution.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2014 Math.NET
+// Copyright (c) 2009-2013 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -27,31 +27,40 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-namespace BadMedicine.Dicom.Statistics.Distributions;
+namespace SynthDicom.Statistics.Distributions;
 
 /// <summary>
-/// Continuous Univariate Probability Distribution.
+/// Univariate Probability Distribution.
 /// </summary>
-internal interface IContinuousDistribution : IUnivariateDistribution
+internal interface IUnivariateDistribution:IDistribution
 {
     /// <summary>
-    /// Gets the mode of the distribution.
+    /// Gets the mean of the distribution.
     /// </summary>
-    double Mode { get; }
+    double Mean { get; }
 
     /// <summary>
-    /// Gets the smallest element in the domain of the distribution which can be represented by a double.
+    /// Gets the variance of the distribution.
     /// </summary>
-    double Minimum { get; }
+    double Variance { get; }
 
     /// <summary>
-    /// Gets the largest element in the domain of the distribution which can be represented by a double.
+    /// Gets the standard deviation of the distribution.
     /// </summary>
-    double Maximum { get; }
+    double StdDev { get; }
 
     /// <summary>
-    /// Draws a random sample from the distribution.
+    /// Gets the entropy of the distribution.
     /// </summary>
-    /// <returns>a sample from the distribution.</returns>
-    double Sample();
+    double Entropy { get; }
+
+    /// <summary>
+    /// Gets the skewness of the distribution.
+    /// </summary>
+    double Skewness { get; }
+
+    /// <summary>
+    /// Gets the median of the distribution.
+    /// </summary>
+    double Median { get; }
 }

@@ -1,32 +1,65 @@
 name: Build, test and package
 
-on: push
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: "22 19 * * 4"
 
 jobs:
   package:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     steps:
       - name: Disable disk flush
         run: sudo apt-get install -y libeatmydata1
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          global-json-file: global.json
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          queries: +security-and-quality
       - name: Start MySQL for testing
         run: sudo systemctl start mysql.service
-      - name: Test
+      - name: Build and Test
         run: |
-          dotnet test "./BadMedicine.Dicom.Tests/BadMedicine.Dicom.Tests.csproj" --nologo -c Release
+          dotnet build -c Release --nologo
+          dotnet test "./SynthDicom.Tests/SynthDicom.Tests.csproj" --nologo -c Release --no-build
           curl -sL https://raw.githubusercontent.com/SMI/DicomTypeTranslation/master/Templates/CT.it > ./CT.it
           cp BadDicom/BadDicom.template.yaml BadDicom.yaml
           dotnet run --project BadDicom/BadDicom.csproj -- ./ 50000 10 CT
           sed -i "s/Batches: 1/Batches: 5/g" ./BadDicom.yaml
           sed -i "s/DropTables: false/DropTables: true/g" ./BadDicom.yaml
           dotnet run --project BadDicom/BadDicom.csproj -- ./ 50000 10 CT
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
+          upload: False
+          output: sarif-results
+      - name: Filter SARIF
+        uses: advanced-security/filter-sarif@v1
+        with:
+          patterns: |
+            +**/*
+            -**/*.g.cs
+          input: sarif-results/csharp.sarif
+          output: sarif-results/csharp.sarif
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-results/csharp.sarif
       - name: Package
         run: |
           mkdir -p dist
-          dotnet pack ./BadMedicine.Dicom/BadMedicine.Dicom.csproj -c Release -p:DebugType=full -p:SymbolPackageFormat=snupkg -p:IncludeSymbols=true -p:Version=$(grep AssemblyInformationalVersion SharedAssemblyInfo.cs | cut -d'"' -f2) -nologo
+          dotnet pack ./SynthDicom/SynthDicom.csproj -c Release -p:DebugType=full -p:SymbolPackageFormat=snupkg -p:IncludeSymbols=true -p:Version=$(grep AssemblyInformationalVersion SharedAssemblyInfo.cs | cut -d'"' -f2) -nologo
           for platform in linux-x64 win-x64 osx-{arm64,x64}
           do
             dotnet publish BadDicom/BadDicom.csproj -c Release -r $platform -o $platform --self-contained true -nologo -v q -p:PublishSingleFile=true -p:DebugType=embedded -p:GenerateDocumentationFile=false
@@ -40,7 +73,7 @@ jobs:
       - name: Nuget push
         if: contains(github.ref,'refs/tags/')
         run: |
-          dotnet nuget push ./BadMedicine.Dicom/bin/Release/HIC.BadMedicine.Dicom.*.nupkg -k ${{ secrets.NUGET_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json
+          dotnet nuget push ./SynthDicom/bin/Release/SynthDicom.*.nupkg -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json
       - name: Upload release binaries
         uses: svenstaro/upload-release-action@2.9.0
         if: contains(github.ref, 'refs/tags/v')

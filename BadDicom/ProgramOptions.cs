@@ -1,7 +1,5 @@
-﻿using BadMedicine.Dicom;
-using CommandLine;
+﻿using CommandLine;
 using CommandLine.Text;
-using System.Collections.Generic;
 
 namespace BadDicom;
 

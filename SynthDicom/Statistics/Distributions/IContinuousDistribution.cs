@@ -1,9 +1,9 @@
-﻿// <copyright file="IUnivariateDistribution.cs" company="Math.NET">
+﻿// <copyright file="IContinuousDistribution.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2013 Math.NET
+// Copyright (c) 2009-2014 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -27,40 +27,31 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-namespace BadMedicine.Dicom.Statistics.Distributions;
+namespace SynthDicom.Statistics.Distributions;
 
 /// <summary>
-/// Univariate Probability Distribution.
+/// Continuous Univariate Probability Distribution.
 /// </summary>
-internal interface IUnivariateDistribution:IDistribution
+internal interface IContinuousDistribution : IUnivariateDistribution
 {
     /// <summary>
-    /// Gets the mean of the distribution.
+    /// Gets the mode of the distribution.
     /// </summary>
-    double Mean { get; }
+    double Mode { get; }
 
     /// <summary>
-    /// Gets the variance of the distribution.
+    /// Gets the smallest element in the domain of the distribution which can be represented by a double.
     /// </summary>
-    double Variance { get; }
+    double Minimum { get; }
 
     /// <summary>
-    /// Gets the standard deviation of the distribution.
+    /// Gets the largest element in the domain of the distribution which can be represented by a double.
     /// </summary>
-    double StdDev { get; }
+    double Maximum { get; }
 
     /// <summary>
-    /// Gets the entropy of the distribution.
+    /// Draws a random sample from the distribution.
     /// </summary>
-    double Entropy { get; }
-
-    /// <summary>
-    /// Gets the skewness of the distribution.
-    /// </summary>
-    double Skewness { get; }
-
-    /// <summary>
-    /// Gets the median of the distribution.
-    /// </summary>
-    double Median { get; }
+    /// <returns>a sample from the distribution.</returns>
+    double Sample();
 }

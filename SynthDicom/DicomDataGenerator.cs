@@ -1,15 +1,13 @@
 ﻿using SynthEHR.Datasets;
-using FellowOakDicom;
-using System;
 using System.IO;
-using System.Linq;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using CsvHelper;
-using SynthEHR;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// <see cref="DataGenerator"/> which produces dicom files on disk and accompanying metadata
@@ -61,8 +59,8 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
     private readonly int[]? _modalities;
 
-    private static readonly List<DicomTag> StudyTags = new()
-    {
+    private static readonly List<DicomTag> StudyTags =
+    [
         DicomTag.PatientID,
         DicomTag.StudyInstanceUID,
         DicomTag.StudyDate,
@@ -72,9 +70,9 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         DicomTag.PatientAge,
         DicomTag.NumberOfStudyRelatedInstances,
         DicomTag.PatientBirthDate
-    };
-    private static readonly List<DicomTag> SeriesTags = new()
-    {
+    ];
+    private static readonly List<DicomTag> SeriesTags =
+    [
         DicomTag.StudyInstanceUID,
         DicomTag.SeriesInstanceUID,
         DicomTag.SeriesDate,
@@ -92,9 +90,9 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         DicomTag.DeviceSerialNumber,
         DicomTag.NumberOfSeriesRelatedInstances,
         DicomTag.SeriesNumber
-    };
-    private static readonly List<DicomTag> ImageTags= new()
-        {
+    ];
+    private static readonly List<DicomTag> ImageTags =
+        [
             DicomTag.SeriesInstanceUID,
             DicomTag.SOPInstanceUID,
             DicomTag.BurnedInAnnotation,
@@ -124,7 +122,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             DicomTag.LossyImageCompressionMethod,
             DicomTag.LossyImageCompressionRatio,
             DicomTag.ScanOptions
-        };
+        ];
     private string _lastStudyUID = "";
     private string _lastSeriesUID = "";
     private CsvWriter? _studyWriter, _seriesWriter, _imageWriter;
@@ -148,12 +146,13 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     private bool csvInitialized;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="DicomDataGenerator"/> class for generating synthetic DICOM images.
     /// </summary>
-    /// <param name="r"></param>
-    /// <param name="outputDir"></param>
-    /// <param name="modalities">List of modalities to generate from e.g. CT,MR.  The frequency of images generated is based on
-    /// the popularity of that modality in a clinical PACS.  Passing nothing results in all supported modalities being generated</param>
+    /// <param name="r">Random number generator for deterministic synthetic data generation</param>
+    /// <param name="outputDir">Directory path where DICOM files will be written, or null/"/dev/null" to discard output</param>
+    /// <param name="modalities">List of modalities to generate (e.g., "CT", "MR"). The frequency of images generated is based on
+    /// the popularity of that modality in a clinical PACS. Passing no modalities results in all supported modalities being generated</param>
+    /// <exception cref="ArgumentException">Thrown when an invalid modality is specified in <paramref name="modalities"/></exception>
     public DicomDataGenerator(Random r, string? outputDir, params string[] modalities) : base(r)
     {
         DevNull = outputDir?.Equals("/dev/null", StringComparison.InvariantCulture) != false;
@@ -167,16 +166,25 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             .Where(i => modalityList.Count == 0 || modalityList.Contains(i.m)).Select(static i => i.i).ToArray();
 
         if (modalityList.Count != 0 && modalityList.Count != _modalities.Length)
-            throw new ArgumentException($"Modality list '{string.Join(' ',modalities)}' not supported, valid values are '{string.Join(' ',stats.ModalityFrequency.Select(i=>i.item.Modality))}'");
+        {
+            var requestedModalities = string.Join(", ", modalities);
+            var validModalities = string.Join(", ", stats.ModalityFrequency.Select(i => i.item.Modality));
+            throw new ArgumentException(
+                $"Invalid modality list provided: '{requestedModalities}'. " +
+                $"Valid modalities are: {validModalities}",
+                nameof(modalities));
+        }
     }
 
     /// <summary>
-    /// Creates a new dicom dataset
+    /// Generates a complete study with all series and images for a given person and writes them to disk or CSV.
     /// </summary>
-    /// <param name="p"></param>
-    /// <returns></returns>
+    /// <param name="p">Person demographics and information for the patient</param>
+    /// <returns>Array containing the generated Study UID as the single element</returns>
     public override object?[] GenerateTestDataRow(Person p)
     {
+        ArgumentNullException.ThrowIfNull(p);
+
         if(!csvInitialized && Csv)
             InitialiseCSVOutput();
 
@@ -218,45 +226,117 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         }
 
         //in the CSV write only the StudyUID
-        return new object?[]{studyUID };
+        return [studyUID];
     }
 
     /// <summary>
-    /// Returns headers for the inventory file produced during <see cref="GenerateTestDataset(SynthEHR.Person,System.Random)"/>
+    /// Returns headers for the inventory file produced during <see cref="GenerateTestDataset(Person,Random)"/>.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Array containing column header names for the inventory CSV</returns>
     protected override string[] GetHeaders()
     {
-        return new[]{ "Studies Generated" };
+        return ["Studies Generated"];
     }
 
     /// <summary>
-    /// Creates a dicom study for the <paramref name="p"/> with tag values that make sense for that person.  This call
-    /// will generate an entire with a (sensible) random number of series and a random number of images per series
-    /// (e.g. for CT studies you might get 2 series of ~100 images each).
+    /// Creates a DICOM study for the specified person with tag values that make sense for that person. This call
+    /// will generate an entire study with a random number of series and a random number of images per series
+    /// based on modality statistics (e.g., for CT studies you might get 2 series of ~100 images each).
     /// </summary>
-    /// <param name="p"></param>
-    /// <param name="study"></param>
-    /// <returns></returns>
+    /// <param name="p">Person demographics and information for the patient</param>
+    /// <param name="study">The generated study containing all series and images</param>
+    /// <returns>Array of all <see cref="DicomDataset"/> instances generated for the study</returns>
     public DicomDataset[] GenerateStudyImages(Person p, out Study study)
     {
+        ArgumentNullException.ThrowIfNull(p);
+
         //generate a study
         study = new Study(this,p,GetRandomModality(r),r);
 
-        return study.SelectMany(series=>series).ToArray();
+        // Calculate total image count for array pooling (sum of all series image counts)
+        var totalImages = study.Series.Sum(s => s.NumberOfSeriesRelatedInstances);
+        var buffer = ArrayPool<DicomDataset>.Shared.Rent(totalImages);
+        try
+        {
+            var index = 0;
+            foreach (var dataset in study.SelectMany(series => series))
+            {
+                buffer[index++] = dataset;
+            }
+
+            var result = new DicomDataset[index];
+            Array.Copy(buffer, result, index);
+            return result;
+        }
+        finally
+        {
+            ArrayPool<DicomDataset>.Shared.Return(buffer, clearArray: true);
+        }
     }
 
     /// <summary>
-    /// Generates a new <see cref="DicomDataset"/> for the given <see cref="Person"/>.  This will be a single image single series study
+    /// Asynchronously streams dicom study images for the <paramref name="p"/> with tag values that make sense for that person.
+    /// This method generates images on-demand, reducing memory pressure for large datasets.
+    /// The study parameter will be set after the first yield return.
     /// </summary>
-    /// <param name="p"></param>
-    /// <param name="_r"></param>
-    /// <returns></returns>
-    public DicomDataset GenerateTestDataset(Person p,Random _r)
+    /// <param name="p">Person to generate study for</param>
+    /// <param name="ct">Cancellation token for cooperative cancellation</param>
+    /// <returns>Async enumerable of DICOM datasets</returns>
+    public async IAsyncEnumerable<(DicomDataset Dataset, Study Study)> GenerateStudyImagesAsync(
+        Person p,
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
+        ArgumentNullException.ThrowIfNull(p);
+
+        //generate a study
+        var study = new Study(this,p,GetRandomModality(r),r);
+
+        foreach (var series in study)
+        {
+            // Allow cooperative cancellation between series
+            await Task.Yield();
+            ct.ThrowIfCancellationRequested();
+
+            foreach (var dataset in series)
+            {
+                ct.ThrowIfCancellationRequested();
+                yield return (dataset, study);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Generates a new <see cref="DicomDataset"/> for the given <see cref="Person"/>. This will be a single image in a single series study.
+    /// </summary>
+    /// <param name="p">Person demographics and information for the patient</param>
+    /// <param name="_r">Random number generator for this dataset</param>
+    /// <returns>A single <see cref="DicomDataset"/> containing all DICOM tags for one image</returns>
+    public DicomDataset GenerateTestDataset(Person p, Random _r)
+    {
+        ArgumentNullException.ThrowIfNull(p);
+
         //get a random modality
         var modality = GetRandomModality(_r);
         return GenerateTestDataset(p,new Study(this,p,modality,_r).Series[0]);
+    }
+
+    /// <summary>
+    /// Asynchronously generates a new <see cref="DicomDataset"/> for the given <see cref="Person"/>.
+    /// This will be a single image single series study.
+    /// </summary>
+    /// <param name="p">Person to generate dataset for</param>
+    /// <param name="_r">Random number generator</param>
+    /// <param name="ct">Cancellation token for cooperative cancellation</param>
+    /// <returns>Task containing the generated DICOM dataset</returns>
+    public Task<DicomDataset> GenerateTestDatasetAsync(Person p, Random _r, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(p);
+
+        ct.ThrowIfCancellationRequested();
+
+        //get a random modality
+        var modality = GetRandomModality(_r);
+        return Task.FromResult(GenerateTestDataset(p,new Study(this,p,modality,_r).Series[0]));
     }
 
     private ModalityStats GetRandomModality(Random _r) =>
@@ -267,13 +347,16 @@ public class DicomDataGenerator : DataGenerator,IDisposable
                 : DicomDataGeneratorStats.GetInstance().ModalityFrequency.GetRandom(_modalities, _r);
 
     /// <summary>
-    /// Returns a new random dicom image for the <paramref name="p"/> with tag values that make sense for that person
+    /// Generates a new DICOM image dataset for the specified person within the given series, with tag values appropriate for that person.
     /// </summary>
-    /// <param name="p"></param>
-    /// <param name="series"></param>
-    /// <returns></returns>
-    public DicomDataset GenerateTestDataset(Person p,Series series)
+    /// <param name="p">Person demographics and information for the patient</param>
+    /// <param name="series">Series this image belongs to, providing modality and timing information</param>
+    /// <returns>A <see cref="DicomDataset"/> containing all DICOM tags for a single image</returns>
+    public DicomDataset GenerateTestDataset(Person p, Series series)
     {
+        ArgumentNullException.ThrowIfNull(p);
+        ArgumentNullException.ThrowIfNull(series);
+
         var ds = new DicomDataset();
 
         ds.AddOrUpdate(DicomTag.StudyInstanceUID,series.Study.StudyUID);
@@ -374,10 +457,10 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         csvInitialized = true;
 
         if (OutputDir == null) return;
-        // Create/open CSV files
-        _studyWriter = new CsvWriter(new StreamWriter(Path.Combine(OutputDir.FullName, StudyCsvFilename)),CultureInfo.CurrentCulture);
-        _seriesWriter = new CsvWriter(new StreamWriter(Path.Combine(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.CurrentCulture);
-        _imageWriter = new CsvWriter(new StreamWriter(Path.Combine(OutputDir.FullName, ImageCsvFilename)),CultureInfo.CurrentCulture);
+        // Create/open CSV files with proper disposal via using statements
+        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)),CultureInfo.InvariantCulture);
+        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.InvariantCulture);
+        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)),CultureInfo.InvariantCulture);
 
         // Write header
         WriteData(_studyWriter, StudyTags.Select(i => i.DictionaryEntry.Keyword));

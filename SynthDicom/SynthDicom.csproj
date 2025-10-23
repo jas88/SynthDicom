@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageId>SynthDicom</PackageId>
+		<Authors>Health Informatics Centre - University of Dundee</Authors>
+		<PackageDescription>Generate large volumes of complex (in terms of tags) DICOM images for integration/stress testing ETL and image management tools.  SynthDicom generates DICOM images on demand based on an anonymous aggregate model of tag data found in Scottish medical imaging with a small memory footprint.</PackageDescription>
+		<PackageProjectUrl>https://github.com/jas88/SynthDicom</PackageProjectUrl>
+		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+		<Copyright>Copyright 2019</Copyright>
+		<PackageTags>DICOM,Test Data,Random,Synthetic Data,Health</PackageTags>
+		<IsAotCompatible>true</IsAotCompatible>
+		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="fo-dicom" Version="5.2.1" />
+		<PackageReference Include="HIC.SynthEHR" Version="2.0.1" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\"/>
+		<AdditionalFiles Include="DicomDataGeneratorDescBodyPart.csv" />
+		<AdditionalFiles Include="DicomDataGeneratorModalities.csv" />
+		<AdditionalFiles Include="DicomDataGeneratorTags.csv" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SynthDicom.SourceGenerators\SynthDicom.SourceGenerators.csproj"
+		                  OutputItemType="Analyzer"
+		                  ReferenceOutputAssembly="false" />
+	</ItemGroup>
+</Project>

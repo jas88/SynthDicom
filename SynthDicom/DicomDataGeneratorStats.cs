@@ -6,7 +6,7 @@ using System.Data;
 using SynthEHR.Datasets;
 using SynthEHR;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 internal sealed class DicomDataGeneratorStats
 {
@@ -82,11 +82,12 @@ internal sealed class DicomDataGeneratorStats
 
 
     /// <summary>
-    /// Generates a random time of day with a frequency that matches the times when the most images are captured (e.g. more images are
-    /// taken at 1pm than at 8pm
+    /// Generates a random time of day with a frequency that matches the times when the most images are captured (e.g., more images are
+    /// taken at 1pm than at 8pm).
     /// </summary>
-    /// <param name="r"></param>
-    /// <returns></returns>
+    /// <param name="r">Random number generator</param>
+    /// <returns>TimeSpan representing the time of day</returns>
+    /// <exception cref="Exception">Thrown if the calculated time span has a non-zero day component</exception>
     public TimeSpan GetRandomTimeOfDay(Random r)
     {
         var ts = new TimeSpan(0,_hourOfDay.GetRandom(r),r.Next(60),r.Next(60),0);
@@ -101,13 +102,18 @@ internal sealed class DicomDataGeneratorStats
         return ts;
     }
 
+    /// <summary>
+    /// Gets a random DICOM ImageType value weighted by frequency in clinical data.
+    /// </summary>
+    /// <param name="r">Random number generator</param>
+    /// <returns>ImageType string (e.g., "ORIGINAL\PRIMARY\AXIAL")</returns>
     public string GetRandomImageType(Random r) => _imageType.GetRandom(r);
 
     /// <summary>
-    /// returns a random string e.g. T101H12451352 where the first letter indicates Tayside and 5th letter indicates Hospital
+    /// Generates a random accession number in the format T{region}{site}{hospital}H{number} (e.g., T101H12451352).
     /// </summary>
-    /// <param name="r"></param>
-    /// <returns></returns>
+    /// <param name="r">Random number generator</param>
+    /// <returns>Synthetic accession number string</returns>
     public static string GetRandomAccessionNumber(Random r) => $"T{r.Next(4)}{r.Next(2)}{r.Next(5)}H{r.Next(9999999)}";
 
     private static BucketList<ModalityStats> InitializeModalityFrequency(Random r) =>

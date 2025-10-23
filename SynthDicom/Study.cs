@@ -1,15 +1,11 @@
-﻿using FellowOakDicom;
-using SynthEHR;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 
-namespace BadMedicine.Dicom;
+namespace SynthDicom;
 
 /// <summary>
 /// Represents a whole DICOM Study (a collection of Series objects).
 /// Stores the DICOM tags that fit at the study/patient level hierarchy
-/// (and are modelled by BadMedicine.Dicom).
+/// (and are modelled by SynthDicom).
 /// </summary>
 public class Study : IEnumerable<Series>
 {
@@ -40,7 +36,7 @@ public class Study : IEnumerable<Series>
     /// <summary>
     /// The Accession Number for this Study, usually used to associate the study with clinical data in the RIS
     /// </summary>
-    public string AccessionNumber { get; }
+    public string? AccessionNumber { get; }
     /// <summary>
     /// Starting time of the Study, empty if unknown
     /// </summary>
@@ -51,7 +47,7 @@ public class Study : IEnumerable<Series>
     /// </summary>
     public int NumberOfStudyRelatedInstances { get; }
 
-    private readonly List<Series> _series = new();
+    private readonly List<Series> _series;
 
     /// <summary>
     /// Constructor for a new Study on a specified Person
@@ -62,6 +58,9 @@ public class Study : IEnumerable<Series>
     /// <param name="r">Seeded PRNG to use</param>
     public Study(DicomDataGenerator parent, Person person, ModalityStats modalityStats, Random r)
     {
+        ArgumentNullException.ThrowIfNull(parent);
+        ArgumentNullException.ThrowIfNull(person);
+
         /////////////////////// Generate all the Study Values ////////////////////
         Parent = parent;
         StudyUID = UIDAllocator.GenerateStudyInstanceUID();
@@ -70,7 +69,7 @@ public class Study : IEnumerable<Series>
         var stats = DicomDataGeneratorStats.GetInstance();
 
         string imageType;
-        NumberOfStudyRelatedInstances = 1;
+        var seriesCount = 1;
         var imageCount = 2;
 
         //if we know about the frequency of StudyDescription values for this modality?
@@ -91,14 +90,14 @@ public class Study : IEnumerable<Series>
             imageType = DicomDataGeneratorStats.Instance.GetRandomImageType(r);
             if(imageType == "ORIGINAL\\PRIMARY\\AXIAL")
             {
-                NumberOfStudyRelatedInstances = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
+                seriesCount = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
                 imageCount = Math.Max(1,(int)modalityStats.ImagesPerSeriesNormal.Sample());
             }
         }
         else
         {
             imageType = "ORIGINAL\\PRIMARY";
-            NumberOfStudyRelatedInstances = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
+            seriesCount = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
             imageCount = Math.Max(1,(int)modalityStats.ImagesPerSeriesNormal.Sample());
         }
 
@@ -112,8 +111,13 @@ public class Study : IEnumerable<Series>
             StudyDescription = part?.StudyDescription;
         }
 
-        for (var i=0;i<NumberOfStudyRelatedInstances;i++)
+        // Pre-size series list with series count (not image count)
+        _series = new List<Series>(seriesCount);
+        for (var i=0;i<seriesCount;i++)
             _series.Add(new Series(this, person, modalityStats.Modality, imageType, imageCount,part));
+
+        // Calculate total instance count across all series
+        NumberOfStudyRelatedInstances = _series.Sum(s => s.NumberOfSeriesRelatedInstances);
     }
 
     /// <summary>

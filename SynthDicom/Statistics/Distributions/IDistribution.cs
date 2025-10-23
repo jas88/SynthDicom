@@ -27,7 +27,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-namespace BadMedicine.Dicom.Statistics.Distributions;
+namespace SynthDicom.Statistics.Distributions;
 
 /// <summary>
 /// Probability Distribution.

@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
 
-namespace BadMedicine.Dicom.Tests;
+namespace SynthDicom.Tests;
 
 /// <summary>
 /// Tests to confirm that the dependencies in csproj files (NuGet packages) match those in the .nuspec files and that packages.md 
@@ -29,7 +25,7 @@ public sealed class PackageListIsCorrectTests
     /// </summary>
     /// <param name="rootPath"></param>
     [TestCase]
-    public void TestPackagesDocumentCorrect(string rootPath=null)
+    public void TestPackagesDocumentCorrect(string? rootPath=null)
     {
         var root= FindRoot(rootPath);
         var undocumented = new StringBuilder();
@@ -53,9 +49,9 @@ public sealed class PackageListIsCorrectTests
     /// <summary>
     /// Generate the report entry for an undocumented package
     /// </summary>
-    /// <param name="package"></param>
-    /// <returns></returns>
-    private static object BuildRecommendedMarkdownLine(string package) =>
+    /// <param name="package">Package name to document</param>
+    /// <returns>Recommended markdown line for the package</returns>
+    private static string BuildRecommendedMarkdownLine(string package) =>
         $"Package {package} is not documented in PACKAGES.md. Recommended line is:\r\n| {package} | [GitHub]() | LICENCE GOES HERE | |";
 
     /// <summary>
@@ -64,11 +60,11 @@ public sealed class PackageListIsCorrectTests
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    private static DirectoryInfo FindRoot(string path = null)
+    private static DirectoryInfo FindRoot(string? path = null)
     {
         if (path != null)
         {
-            if (!Path.IsPathRooted(path)) path = Path.Combine(TestContext.CurrentContext.TestDirectory, path);
+            if (!Path.IsPathRooted(path)) path = Path.Join(TestContext.CurrentContext.TestDirectory, path);
             return new DirectoryInfo(path);
         }
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -81,13 +77,11 @@ public sealed class PackageListIsCorrectTests
     /// <summary>
     /// Returns all csproj files in the repository, except those containing the string 'tests'
     /// </summary>
-    /// <param name="root"></param>
-    /// <returns></returns>
-    private static IEnumerable<string> GetCsprojFiles(DirectoryInfo root)
-    {
-        return root.EnumerateFiles("*.csproj", EnumerationOptions).Select(static f => f.FullName)
+    /// <param name="root">Root directory to search from</param>
+    /// <returns>Enumerable of csproj file paths</returns>
+    private static IEnumerable<string> GetCsprojFiles(DirectoryInfo root) =>
+        root.EnumerateFiles("*.csproj", EnumerationOptions).Select(static f => f.FullName)
             .Where(static f => !f.Contains("tests", StringComparison.InvariantCultureIgnoreCase));
-    }
 
     /// <summary>
     /// Find the sole packages.md file wherever in the repo it lives. Error if multiple or none.
