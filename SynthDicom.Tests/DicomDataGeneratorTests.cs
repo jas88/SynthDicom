@@ -21,7 +21,8 @@ public class DicomDataGeneratorTests
         var person = new Person(r);
 
         //generates a study but because of maximum images 1 we should only get 1 image being generated
-        var studyUid = (string)generator.GenerateTestDataRow(person)[0];
+        var studyUid = (string?)generator.GenerateTestDataRow(person)[0];
+        Assert.That(studyUid, Is.Not.Null, "Study UID should not be null");
 
         //should be a directory named after the Study UID
         Assert.That(Directory.Exists(Path.Combine(TestContext.CurrentContext.WorkDirectory, studyUid)));

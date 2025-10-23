@@ -29,7 +29,7 @@ public sealed class PackageListIsCorrectTests
     /// </summary>
     /// <param name="rootPath"></param>
     [TestCase]
-    public void TestPackagesDocumentCorrect(string rootPath=null)
+    public void TestPackagesDocumentCorrect(string? rootPath=null)
     {
         var root= FindRoot(rootPath);
         var undocumented = new StringBuilder();
@@ -64,7 +64,7 @@ public sealed class PackageListIsCorrectTests
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    private static DirectoryInfo FindRoot(string path = null)
+    private static DirectoryInfo FindRoot(string? path = null)
     {
         if (path != null)
         {

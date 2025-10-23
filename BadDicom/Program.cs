@@ -183,6 +183,11 @@ internal class Program
             return -2;
         }
 
+        if (string.IsNullOrWhiteSpace(configDatabase.DatabaseName))
+        {
+            Console.WriteLine("Database name must be specified in configuration");
+            return -3;
+        }
 
         var db = server.ExpectDatabase(configDatabase.DatabaseName);
 
@@ -287,15 +292,17 @@ internal class Program
 
         for (var i = 0; i < tables.Length; i++)
         {
-            if(pks[i] == null)
+            var pk = pks[i];
+            if(pk == null)
                 continue;
 
             Console.WriteLine( $"{DateTime.Now} Making table '{tables[i]}' distinct (this may take a long time)");
             var tbl = tables[i];
             tbl.MakeDistinct(500000000);
 
-            Console.WriteLine( $"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pks[i]}'");
-            tbl.CreatePrimaryKey(500000000,tbl.DiscoverColumn(pks[i]));
+            Console.WriteLine( $"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pk}'");
+            var pkColumn = tbl.DiscoverColumn(pk);
+            tbl.CreatePrimaryKey(500000000, pkColumn);
         }
 
         Console.WriteLine("Final Row Counts:");
