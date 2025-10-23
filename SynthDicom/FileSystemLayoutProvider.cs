@@ -4,18 +4,18 @@ using System.IO;
 
 namespace SynthDicom;
 
-internal class FileSystemLayoutProvider
+internal class FileSystemLayoutProvider(FileSystemLayout layout)
 {
-    public FileSystemLayout Layout { get; }
-
-    public FileSystemLayoutProvider(FileSystemLayout layout)
-    {
-        Layout = layout;
-    }
+    public FileSystemLayout Layout { get; } = layout;
 
     public FileInfo GetPath(DirectoryInfo root,DicomDataset ds)
     {
-        var filename = $"{ds.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID).UID}.dcm";
+        var sopUID = ds.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID).UID;
+        var filename = string.Create(sopUID.Length + 4, sopUID, static (span, uid) =>
+        {
+            uid.AsSpan().CopyTo(span);
+            ".dcm".AsSpan().CopyTo(span[uid.Length..]);
+        });
         var date = ds.GetValues<DateTime>(DicomTag.StudyDate);
 
         switch(Layout)
@@ -59,7 +59,11 @@ internal class FileSystemLayoutProvider
                     ds.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID).UID,
                     filename));
 
-            default: throw new ArgumentOutOfRangeException(nameof(Layout));
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(Layout),
+                    Layout,
+                    $"Unsupported file system layout: {Layout}. Valid layouts are: Flat, StudyYearMonthDay, StudyYearMonthDayAccession, StudyUID");
         }
 
         return  new FileInfo(Path.Combine(root.FullName,filename));

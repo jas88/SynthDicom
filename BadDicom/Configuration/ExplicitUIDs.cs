@@ -50,7 +50,7 @@ public sealed class ExplicitUIDs
 
     private static IEnumerable<string> GetUIDsFrom(string? path)
     {
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return Enumerable.Empty<string>();
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return [];
 
         return File.ReadLines(path).Where(static l => !string.IsNullOrWhiteSpace(l));
     }

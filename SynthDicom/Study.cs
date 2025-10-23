@@ -51,7 +51,7 @@ public class Study : IEnumerable<Series>
     /// </summary>
     public int NumberOfStudyRelatedInstances { get; }
 
-    private readonly List<Series> _series = new();
+    private readonly List<Series> _series;
 
     /// <summary>
     /// Constructor for a new Study on a specified Person
@@ -112,6 +112,8 @@ public class Study : IEnumerable<Series>
             StudyDescription = part?.StudyDescription;
         }
 
+        // Pre-size series list with known count
+        _series = new List<Series>(NumberOfStudyRelatedInstances);
         for (var i=0;i<NumberOfStudyRelatedInstances;i++)
             _series.Add(new Series(this, person, modalityStats.Modality, imageType, imageCount,part));
     }

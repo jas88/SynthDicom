@@ -58,7 +58,9 @@ internal sealed class Normal : IContinuousDistribution
     {
         if (!IsValidParameterSet(mean,stddev))
         {
-            throw new ArgumentException("Invalid parametrization for the distribution.");
+            throw new ArgumentException(
+                $"Invalid parameters for Normal distribution: mean={mean}, stddev={stddev}. " +
+                $"Standard deviation must be >= 0 and mean must not be NaN.");
         }
 
         _random = randomSource ?? new Random();

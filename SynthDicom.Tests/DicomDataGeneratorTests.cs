@@ -154,14 +154,12 @@ public class DicomDataGeneratorTests
         var people = new PersonCollection();
         people.GeneratePeople(100, r);
 
-        using (var generator = new DicomDataGenerator(r, outputDir.FullName, "CT"))
-        {
-            generator.Csv = true;
-            generator.NoPixels = true;
-            generator.MaximumImages = 500;
+        using var generator = new DicomDataGenerator(r, outputDir.FullName, "CT");
+        generator.Csv = true;
+        generator.NoPixels = true;
+        generator.MaximumImages = 500;
 
-            generator.GenerateTestDataFile(people, new FileInfo(Path.Combine(outputDir.FullName, "index.csv")), 500);
-        }
+        generator.GenerateTestDataFile(people, new FileInfo(Path.Combine(outputDir.FullName, "index.csv")), 500);
 
         //3 csv files + index.csv (the default one
         Assert.That(outputDir.GetFiles(), Has.Length.EqualTo(4));

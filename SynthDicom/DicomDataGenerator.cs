@@ -61,8 +61,8 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
     private readonly int[]? _modalities;
 
-    private static readonly List<DicomTag> StudyTags = new()
-    {
+    private static readonly List<DicomTag> StudyTags =
+    [
         DicomTag.PatientID,
         DicomTag.StudyInstanceUID,
         DicomTag.StudyDate,
@@ -72,9 +72,9 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         DicomTag.PatientAge,
         DicomTag.NumberOfStudyRelatedInstances,
         DicomTag.PatientBirthDate
-    };
-    private static readonly List<DicomTag> SeriesTags = new()
-    {
+    ];
+    private static readonly List<DicomTag> SeriesTags =
+    [
         DicomTag.StudyInstanceUID,
         DicomTag.SeriesInstanceUID,
         DicomTag.SeriesDate,
@@ -92,9 +92,9 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         DicomTag.DeviceSerialNumber,
         DicomTag.NumberOfSeriesRelatedInstances,
         DicomTag.SeriesNumber
-    };
-    private static readonly List<DicomTag> ImageTags= new()
-        {
+    ];
+    private static readonly List<DicomTag> ImageTags =
+        [
             DicomTag.SeriesInstanceUID,
             DicomTag.SOPInstanceUID,
             DicomTag.BurnedInAnnotation,
@@ -124,7 +124,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             DicomTag.LossyImageCompressionMethod,
             DicomTag.LossyImageCompressionRatio,
             DicomTag.ScanOptions
-        };
+        ];
     private string _lastStudyUID = "";
     private string _lastSeriesUID = "";
     private CsvWriter? _studyWriter, _seriesWriter, _imageWriter;
@@ -167,7 +167,14 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             .Where(i => modalityList.Count == 0 || modalityList.Contains(i.m)).Select(static i => i.i).ToArray();
 
         if (modalityList.Count != 0 && modalityList.Count != _modalities.Length)
-            throw new ArgumentException($"Modality list '{string.Join(' ',modalities)}' not supported, valid values are '{string.Join(' ',stats.ModalityFrequency.Select(i=>i.item.Modality))}'");
+        {
+            var requestedModalities = string.Join(", ", modalities);
+            var validModalities = string.Join(", ", stats.ModalityFrequency.Select(i => i.item.Modality));
+            throw new ArgumentException(
+                $"Invalid modality list provided: '{requestedModalities}'. " +
+                $"Valid modalities are: {validModalities}",
+                nameof(modalities));
+        }
     }
 
     /// <summary>
@@ -218,7 +225,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         }
 
         //in the CSV write only the StudyUID
-        return new object?[]{studyUID };
+        return [studyUID];
     }
 
     /// <summary>
@@ -227,7 +234,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// <returns></returns>
     protected override string[] GetHeaders()
     {
-        return new[]{ "Studies Generated" };
+        return ["Studies Generated"];
     }
 
     /// <summary>
