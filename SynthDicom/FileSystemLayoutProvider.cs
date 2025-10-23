@@ -43,13 +43,8 @@ internal class FileSystemLayoutProvider(FileSystemLayout layout)
                 date[0].Day.ToString(),
                 filename)),
 
-            FileSystemLayout.StudyYearMonthDayAccession when date.Length > 0 && !string.IsNullOrWhiteSpace(ds.GetSingleValue<string>(DicomTag.AccessionNumber)) => new FileInfo(Path.Join(
-                root.FullName,
-                date[0].Year.ToString(),
-                date[0].Month.ToString(),
-                date[0].Day.ToString(),
-                ds.GetSingleValue<string>(DicomTag.AccessionNumber),
-                filename)),
+            FileSystemLayout.StudyYearMonthDayAccession when date.Length > 0 =>
+                GetPathWithAccessionNumber(root, ds, date[0], filename),
 
             FileSystemLayout.StudyUID => new FileInfo(Path.Join(
                 root.FullName,
@@ -58,6 +53,20 @@ internal class FileSystemLayoutProvider(FileSystemLayout layout)
 
             _ => new FileInfo(Path.Join(root.FullName, filename))
         };
+    }
+
+    private static FileInfo GetPathWithAccessionNumber(DirectoryInfo root, DicomDataset ds, DateTime date, string filename)
+    {
+        var accessionNumber = ds.GetSingleValue<string>(DicomTag.AccessionNumber);
+        return !string.IsNullOrWhiteSpace(accessionNumber)
+            ? new FileInfo(Path.Join(
+                root.FullName,
+                date.Year.ToString(),
+                date.Month.ToString(),
+                date.Day.ToString(),
+                accessionNumber,
+                filename))
+            : new FileInfo(Path.Join(root.FullName, filename));
     }
 
 }

@@ -69,7 +69,7 @@ public class Study : IEnumerable<Series>
         var stats = DicomDataGeneratorStats.GetInstance();
 
         string imageType;
-        NumberOfStudyRelatedInstances = 1;
+        var seriesCount = 1;
         var imageCount = 2;
 
         //if we know about the frequency of StudyDescription values for this modality?
@@ -90,14 +90,14 @@ public class Study : IEnumerable<Series>
             imageType = DicomDataGeneratorStats.Instance.GetRandomImageType(r);
             if(imageType == "ORIGINAL\\PRIMARY\\AXIAL")
             {
-                NumberOfStudyRelatedInstances = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
+                seriesCount = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
                 imageCount = Math.Max(1,(int)modalityStats.ImagesPerSeriesNormal.Sample());
             }
         }
         else
         {
             imageType = "ORIGINAL\\PRIMARY";
-            NumberOfStudyRelatedInstances = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
+            seriesCount = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
             imageCount = Math.Max(1,(int)modalityStats.ImagesPerSeriesNormal.Sample());
         }
 
@@ -111,10 +111,13 @@ public class Study : IEnumerable<Series>
             StudyDescription = part?.StudyDescription;
         }
 
-        // Pre-size series list with known count
-        _series = new List<Series>(NumberOfStudyRelatedInstances);
-        for (var i=0;i<NumberOfStudyRelatedInstances;i++)
+        // Pre-size series list with series count (not image count)
+        _series = new List<Series>(seriesCount);
+        for (var i=0;i<seriesCount;i++)
             _series.Add(new Series(this, person, modalityStats.Modality, imageType, imageCount,part));
+
+        // Calculate total instance count across all series
+        NumberOfStudyRelatedInstances = _series.Sum(s => s.NumberOfSeriesRelatedInstances);
     }
 
     /// <summary>

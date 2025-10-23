@@ -457,10 +457,10 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         csvInitialized = true;
 
         if (OutputDir == null) return;
-        // Create/open CSV files
-        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)),CultureInfo.CurrentCulture);
-        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.CurrentCulture);
-        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)),CultureInfo.CurrentCulture);
+        // Create/open CSV files with proper disposal via using statements
+        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)),CultureInfo.InvariantCulture);
+        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.InvariantCulture);
+        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)),CultureInfo.InvariantCulture);
 
         // Write header
         WriteData(_studyWriter, StudyTags.Select(i => i.DictionaryEntry.Keyword));

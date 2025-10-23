@@ -163,7 +163,7 @@ public class DicomDataGeneratorTests
 
         foreach (var f in outputDir.GetFiles())
         {
-            using var reader = new CsvReader(new StreamReader(f.FullName), CultureInfo.CurrentCulture);
+            using var reader = new CsvReader(new StreamReader(f.FullName), CultureInfo.InvariantCulture);
             var rowcount = 0;
 
             //confirms that the CSV is intact (no dodgy commas, unquoted newlines etc)

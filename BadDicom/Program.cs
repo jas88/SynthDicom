@@ -303,6 +303,7 @@ internal class Program
                 continue;
             }
             tbl.CreatePrimaryKey(500000000, pkColumn);
+        }
 
         Console.WriteLine("Final Row Counts:");
 
