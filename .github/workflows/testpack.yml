@@ -73,7 +73,7 @@ jobs:
       - name: Nuget push
         if: contains(github.ref,'refs/tags/')
         run: |
-          dotnet nuget push ./SynthDicom/bin/Release/HIC.SynthDicom.*.nupkg -k ${{ secrets.NUGET_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json
+          dotnet nuget push ./SynthDicom/bin/Release/HIC.SynthDicom.*.nupkg -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json
       - name: Upload release binaries
         uses: svenstaro/upload-release-action@2.9.0
         if: contains(github.ref, 'refs/tags/v')
