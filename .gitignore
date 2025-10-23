@@ -334,10 +334,6 @@ ASALocalRun/
 my_data/
 Visual Studio 2017/
 
-# Select the version of dotnet SDK/runtime to use if multiple are installed
-# See: https://docs.microsoft.com/en-us/dotnet/core/versions/selection
-global.json
-
 # Claude Code and claude-flow
 .claude/
 .swarm/
