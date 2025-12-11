@@ -1,20 +1,18 @@
 <Project>
-  <!-- Common properties for all projects -->
+  <!-- Import shared build standards -->
+  <Import Project="build-standards/Directory.Build.props.shared" />
+
+  <!-- Repository-specific overrides -->
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <LangVersion>latest</LangVersion>
+    <!-- Override MIT default - this repo is GPL-3.0 licensed -->
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <!-- Keep ImplicitUsings disabled (local override) -->
     <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Keep GenerateAssemblyInfo disabled - using SharedAssemblyInfo.cs -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RollForward>Major</RollForward>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>embedded</DebugType>
-  </PropertyGroup>
-
-  <!-- Common source control and symbol settings -->
-  <PropertyGroup>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <!-- Shared assembly info -->
@@ -22,7 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
 
-  <!-- Common package versions -->
+  <!-- Additional package for GitHub source linking -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
