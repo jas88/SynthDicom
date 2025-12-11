@@ -1,6 +1,6 @@
 # SynthDicom
 
-[![NuGet Badge](https://buildstats.info/nuget/SynthDicom)](https://www.nuget.org/packages/SynthDicom/) [![Build, test and package](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml) [![CodeQL](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml)
+[![NuGet Badge](https://buildstats.info/nuget/SynthDicom)](https://www.nuget.org/packages/SynthDicom/) [![Build, test and package](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/testpack.yml) [![CodeQL](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml/badge.svg)](https://github.com/jas88/SynthDicom/actions/workflows/codeql.yml) [![codecov](https://codecov.io/gh/jas88/SynthDicom/graph/badge.svg)](https://codecov.io/gh/jas88/SynthDicom)
 
 The purpose of SynthDicom is to generate large volumes of complex (in terms of tags) dicom images for integration/stress testing ETL and image management tools.
 
