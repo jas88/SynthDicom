@@ -3,29 +3,23 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: weekly
-    reviewers: []
-    labels:
-      - "dependencies"
-      - "nuget"
-    target-branch: "main"
+      interval: "weekly"
+      day: "sunday"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: weekly
-    reviewers: []
-    labels:
-      - "dependencies"
-      - "github-actions"
-    target-branch: "main"
+      interval: "weekly"
+      day: "sunday"
 
   - package-ecosystem: "dotnet-sdk"
     directory: "/"
     schedule:
-      interval: weekly
-    reviewers: []
-    labels:
-      - "dependencies"
-      - "dotnet-sdk"
-    target-branch: "main"
+      interval: "weekly"
+      day: "sunday"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"

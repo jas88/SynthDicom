@@ -1,0 +1,36 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Build Tools -->
+    <PackageVersion Include="MinVer" Version="6.0.0" />
+    <PackageVersion Include="DotNet.ReproducibleBuilds" Version="1.2.39" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+
+    <!-- Testing -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="NUnit" Version="4.3.2" />
+    <PackageVersion Include="NUnit.Analyzers" Version="4.7.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+
+    <!-- Source Generators -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
+
+    <!-- SynthDicom Dependencies -->
+    <PackageVersion Include="fo-dicom" Version="5.2.1" />
+    <PackageVersion Include="HIC.SynthEHR" Version="2.0.1" />
+    <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.11" />
+    <PackageVersion Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
+
+    <!-- BadDicom Dependencies -->
+    <PackageVersion Include="CommandLineParser" Version="2.9.1" />
+    <PackageVersion Include="HIC.DicomTypeTranslation" Version="4.1.5" />
+    <PackageVersion Include="Vecc.YamlDotNet.Analyzers.StaticGenerator" Version="16.3.0" />
+    <PackageVersion Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+</Project>

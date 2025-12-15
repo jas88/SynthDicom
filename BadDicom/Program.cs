@@ -1,6 +1,7 @@
 using CommandLine;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using YamlDotNet.Serialization;
 
 namespace BadDicom;
 
-internal class Program
+internal sealed class Program
 {
     private static int _returnCode;
     public const string ConfigFile = "./BadDicom.yaml";
@@ -131,7 +132,7 @@ internal class Program
         //Generate the dicom files (of the modalities that the user requested)
         var modalities = string.IsNullOrWhiteSpace(opts.Modalities)? Array.Empty<string>() :opts.Modalities.Split(",");
 
-        dir = opts.OutputDirectory?.Equals("/dev/null",StringComparison.InvariantCulture)!=false ? null : Directory.CreateDirectory(opts.OutputDirectory);
+        dir = opts.OutputDirectory?.Equals("/dev/null",StringComparison.Ordinal)!=false ? null : Directory.CreateDirectory(opts.OutputDirectory);
         return new DicomDataGenerator(r, opts.OutputDirectory, modalities)
         {
             NoPixels = opts.NoPixels,
@@ -143,12 +144,12 @@ internal class Program
         };
     }
 
-    private static IPersonCollection GetPeople(ProgramOptions opts, out Random r)
+    private static PersonCollection GetPeople(ProgramOptions opts, out Random r)
     {
         r = opts.Seed == -1 ? new Random() : new Random(opts.Seed);
 
         //create a cohort of people
-        IPersonCollection identifiers = new PersonCollection();
+        PersonCollection identifiers = new PersonCollection();
         identifiers.GeneratePeople(opts.NumberOfPatients,r);
 
         return identifiers;
@@ -255,7 +256,7 @@ internal class Program
                 if (pks[i] != null)
                 {
                     //if it is sop instance uid then we shouldn't be trying to deduplicate
-                    if (string.Equals(pks[i], neverDistinct, StringComparison.CurrentCultureIgnoreCase))
+                    if (string.Equals(pks[i], neverDistinct, StringComparison.OrdinalIgnoreCase))
                         pks[i] = null;
                     else
                     {
@@ -298,7 +299,7 @@ internal class Program
                 dt.Rows.Clear();
 
                 batches[j][i] = dt;
-                uploaders[j][i] = tbl.BeginBulkInsert();
+                uploaders[j][i] = tbl.BeginBulkInsert(CultureInfo.InvariantCulture);
             }
         }
         var identifiers = GetPeople(opts, out var r);
@@ -336,7 +337,7 @@ internal class Program
         return 0;
     }
 
-    private static void RunBatch(IPersonCollection identifiers, ProgramOptions opts, Random r,DataTable[] batches, IBulkCopy[] uploaders)
+    private static void RunBatch(PersonCollection identifiers, ProgramOptions opts, Random r,DataTable[] batches, IBulkCopy[] uploaders)
     {
         Stopwatch swGeneration = new();
         Stopwatch swReading = new();

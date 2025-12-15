@@ -1,8 +1,9 @@
-using FellowOakDicom;
+﻿using FellowOakDicom;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Globalization;
 
 namespace SynthDicom;
 
@@ -55,7 +56,7 @@ internal static class BitmapToDicom
         dataset.AddOrUpdate(DicomTag.HighBit, (ushort)7);
         dataset.AddOrUpdate(DicomTag.PixelRepresentation, (ushort)0);
         dataset.AddOrUpdate(DicomTag.SamplesPerPixel, (ushort)1);
-        dataset.AddOrUpdate(DicomTag.NumberOfFrames, frames.Length.ToString());
+        dataset.AddOrUpdate(DicomTag.NumberOfFrames, frames.Length.ToString(CultureInfo.InvariantCulture));
 
         // Create pixel data element
         var pixelData = DicomPixelData.Create(dataset, true);
@@ -135,10 +136,10 @@ internal static class BitmapToDicom
 
         if (totalFrames > 1)
         {
-            ds.AddOrUpdate(DicomTag.NumberOfFrames, totalFrames.ToString());
+            ds.AddOrUpdate(DicomTag.NumberOfFrames, totalFrames.ToString(CultureInfo.InvariantCulture));
             // Frame time in milliseconds: 1000ms / totalFrames (for fps calculation)
             var frameTime = 1000.0m / totalFrames;
-            ds.AddOrUpdate(DicomTag.FrameTime, frameTime.ToString("F2"));
+            ds.AddOrUpdate(DicomTag.FrameTime, frameTime.ToString("F2", CultureInfo.InvariantCulture));
         }
 
         // For multi-frame, we need to use DicomPixelData to create a CompositeByteBuffer
@@ -183,7 +184,7 @@ internal static class BitmapToDicom
     /// <summary>
     /// Converts an ImageSharp bitmap to DICOM pixel data byte buffer.
     /// </summary>
-    private static IByteBuffer ConvertBitmapToPixelData(Image<Rgb24> bitmap)
+    private static MemoryByteBuffer ConvertBitmapToPixelData(Image<Rgb24> bitmap)
     {
         var pixels = new byte[bitmap.Width * bitmap.Height * 3];
         int index = 0;

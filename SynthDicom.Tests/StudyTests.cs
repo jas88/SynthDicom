@@ -1,6 +1,6 @@
 ﻿namespace SynthDicom.Tests;
 
-internal class StudyTests
+internal sealed class StudyTests
 {
     [Test]
     public void Test_CreatingNewStudy_HasSomeImages()
