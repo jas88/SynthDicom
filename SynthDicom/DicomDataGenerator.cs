@@ -160,7 +160,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// <exception cref="ArgumentException">Thrown when an invalid modality is specified in <paramref name="modalities"/></exception>
     public DicomDataGenerator(Random r, string? outputDir, params string[] modalities) : base(r)
     {
-        DevNull = outputDir?.Equals("/dev/null", StringComparison.InvariantCulture) != false;
+        DevNull = outputDir?.Equals("/dev/null", StringComparison.Ordinal) != false;
         OutputDir = DevNull ? null : Directory.CreateDirectory(outputDir!);
 
         var stats = DicomDataGeneratorStats.GetInstance();
@@ -314,15 +314,15 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// Generates a new <see cref="DicomDataset"/> for the given <see cref="Person"/>. This will be a single image in a single series study.
     /// </summary>
     /// <param name="p">Person demographics and information for the patient</param>
-    /// <param name="_r">Random number generator for this dataset</param>
+    /// <param name="random">Random number generator for this dataset</param>
     /// <returns>A single <see cref="DicomDataset"/> containing all DICOM tags for one image</returns>
-    public DicomDataset GenerateTestDataset(Person p, Random _r)
+    public DicomDataset GenerateTestDataset(Person p, Random random)
     {
         ArgumentNullException.ThrowIfNull(p);
 
         //get a random modality
-        var modality = GetRandomModality(_r);
-        return GenerateTestDataset(p,new Study(this,p,modality,_r).Series[0]);
+        var modality = GetRandomModality(random);
+        return GenerateTestDataset(p,new Study(this,p,modality,random).Series[0]);
     }
 
     /// <summary>
@@ -330,26 +330,26 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// This will be a single image single series study.
     /// </summary>
     /// <param name="p">Person to generate dataset for</param>
-    /// <param name="_r">Random number generator</param>
+    /// <param name="random">Random number generator</param>
     /// <param name="ct">Cancellation token for cooperative cancellation</param>
     /// <returns>Task containing the generated DICOM dataset</returns>
-    public Task<DicomDataset> GenerateTestDatasetAsync(Person p, Random _r, CancellationToken ct = default)
+    public Task<DicomDataset> GenerateTestDatasetAsync(Person p, Random random, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(p);
 
         ct.ThrowIfCancellationRequested();
 
         //get a random modality
-        var modality = GetRandomModality(_r);
-        return Task.FromResult(GenerateTestDataset(p,new Study(this,p,modality,_r).Series[0]));
+        var modality = GetRandomModality(random);
+        return Task.FromResult(GenerateTestDataset(p,new Study(this,p,modality,random).Series[0]));
     }
 
-    private ModalityStats GetRandomModality(Random _r) =>
+    private ModalityStats GetRandomModality(Random random) =>
         _modalities is null
-            ? DicomDataGeneratorStats.GetInstance().GetRandomModality(_r)
+            ? DicomDataGeneratorStats.GetInstance().GetRandomModality(random)
             : _modalities.Length == 1
                 ? DicomDataGeneratorStats.GetInstance().ModalityFrequency.Items[_modalities[0]].Value
-                : DicomDataGeneratorStats.GetInstance().GetRandomModality(_modalities, _r);
+                : DicomDataGeneratorStats.GetInstance().GetRandomModality(_modalities, random);
 
     /// <summary>
     /// Generates a new DICOM image dataset for the specified person within the given series, with tag values appropriate for that person.

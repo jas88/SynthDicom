@@ -17,7 +17,7 @@ public class Study : IEnumerable<Series>
     /// <summary>
     /// The DicomDataGenerator which created this Study
     /// </summary>
-    public DicomDataGenerator Parent;
+    public DicomDataGenerator Parent { get; }
 
     /// <summary>
     /// The DICOM UID of this Study

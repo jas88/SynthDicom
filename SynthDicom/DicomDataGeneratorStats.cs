@@ -52,7 +52,7 @@ internal sealed class DicomDataGeneratorStats
         //ts = ts.Subtract(new TimeSpan(ts.Days,0,0,0));
 
         if (ts.Days != 0)
-            throw new Exception("What!");
+            throw new InvalidOperationException("Generated time of day has invalid day component");
 
         return ts;
     }
@@ -302,7 +302,7 @@ internal sealed class DicomDataGeneratorStats
                 return ModalityFrequency.Items[idx].Value;
         }
 
-        throw new Exception("Could not GetRandomModality");
+        throw new InvalidOperationException("Could not GetRandomModality");
     }
 
     /// <summary>

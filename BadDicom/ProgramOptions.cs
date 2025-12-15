@@ -3,7 +3,7 @@ using CommandLine.Text;
 
 namespace BadDicom;
 
-internal class ProgramOptions
+internal sealed class ProgramOptions
 {
     [Value(0,HelpText = "Output directory to create CSV files in",Required=true)]
     public string? OutputDirectory { get; set; }

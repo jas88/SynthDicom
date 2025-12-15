@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System.Globalization;
+using System.IO;
 
 namespace SynthDicom;
 
@@ -6,7 +7,7 @@ namespace SynthDicom;
 /// Provides file system path generation for DICOM files based on the configured layout strategy.
 /// </summary>
 /// <param name="layout">The file system layout strategy to use</param>
-internal class FileSystemLayoutProvider(FileSystemLayout layout)
+internal sealed class FileSystemLayoutProvider(FileSystemLayout layout)
 {
     /// <summary>
     /// Gets the configured file system layout strategy.
@@ -38,9 +39,9 @@ internal class FileSystemLayoutProvider(FileSystemLayout layout)
 
             FileSystemLayout.StudyYearMonthDay when date.Length > 0 => new FileInfo(Path.Join(
                 root.FullName,
-                date[0].Year.ToString(),
-                date[0].Month.ToString(),
-                date[0].Day.ToString(),
+                date[0].Year.ToString(CultureInfo.InvariantCulture),
+                date[0].Month.ToString(CultureInfo.InvariantCulture),
+                date[0].Day.ToString(CultureInfo.InvariantCulture),
                 filename)),
 
             FileSystemLayout.StudyYearMonthDayAccession when date.Length > 0 =>
@@ -61,9 +62,9 @@ internal class FileSystemLayoutProvider(FileSystemLayout layout)
         return !string.IsNullOrWhiteSpace(accessionNumber)
             ? new FileInfo(Path.Join(
                 root.FullName,
-                date.Year.ToString(),
-                date.Month.ToString(),
-                date.Day.ToString(),
+                date.Year.ToString(CultureInfo.InvariantCulture),
+                date.Month.ToString(CultureInfo.InvariantCulture),
+                date.Day.ToString(CultureInfo.InvariantCulture),
                 accessionNumber,
                 filename))
             : new FileInfo(Path.Join(root.FullName, filename));
