@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -18,7 +20,7 @@ public class DescBodyPartGenerator : IIncrementalGenerator
     {
         // Find CSV files
         var csvFiles = context.AdditionalTextsProvider
-            .Where(file => file.Path.EndsWith("DicomDataGeneratorDescBodyPart.csv"))
+            .Where(file => file.Path.EndsWith("DicomDataGeneratorDescBodyPart.csv", StringComparison.Ordinal))
             .Select((file, ct) => file.GetText(ct))
             .Where(text => text != null)
             .Collect();
@@ -75,7 +77,7 @@ public class DescBodyPartGenerator : IIncrementalGenerator
                 var studyDesc = row.GetValueOrDefault("StudyDescription", "");
                 var bodyPart = row.GetValueOrDefault("BodyPartExamined", "");
                 var seriesDesc = row.GetValueOrDefault("SeriesDescription", "");
-                var count = int.Parse(row.GetValueOrDefault("series_count", "0"));
+                var count = int.Parse(row.GetValueOrDefault("series_count", "0"), CultureInfo.InvariantCulture);
 
                 cumulative += count;
 

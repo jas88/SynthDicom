@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ public class ModalitiesGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var csvFiles = context.AdditionalTextsProvider
-            .Where(file => file.Path.EndsWith("DicomDataGeneratorModalities.csv"))
+            .Where(file => file.Path.EndsWith("DicomDataGeneratorModalities.csv", StringComparison.Ordinal))
             .Select((file, ct) => file.GetText(ct))
             .Where(text => text != null)
             .Collect();
