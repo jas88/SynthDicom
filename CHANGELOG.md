@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SixLabors.ImageSharp and SixLabors.ImageSharp.Drawing dependencies
 - Unused internal `BitmapToDicom.ConvertToMultiFrame`
 - Transitive `MongoDB.Driver` dependency of BadDicom, and with it `SharpCompress`, `DnsClient`, `Snappier` and `ZstdSharp.Port`
+- `Microsoft.SourceLink.GitHub` package reference; Source Link is built into the .NET 8+ SDK. This also removes the build-time `Microsoft.Build.Tasks.Git` 8.0.0 dependency (GHSA-23fw-v26w-5fgq)
 
 ## [1.0.0] - 2025-01-23
 
