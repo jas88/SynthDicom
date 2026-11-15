@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - Pin transitive FAnsiSql.Legacy to 3.7.0, which brings patched MySqlConnector 2.6.2 (GHSA-473q-m89c-ghf8), System.Security.Cryptography.Pkcs 10.0.14 (GHSA-846f-f764-76mx) and SQLitePCLRaw 3.0.5 (GHSA-2m69-gcr7-jv3q)
+- Remove the redundant `Microsoft.SourceLink.GitHub` package reference (Source Link is built into the .NET 8+ SDK), which drops the build-time `Microsoft.Build.Tasks.Git` 8.0.0 dependency (GHSA-23fw-v26w-5fgq)
 
 ### Removed
 - SixLabors.ImageSharp and SixLabors.ImageSharp.Drawing dependencies
