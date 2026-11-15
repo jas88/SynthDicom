@@ -32,8 +32,8 @@
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
 
     <!-- Transitive security pins -->
-    <!-- GHSA-2m69-gcr7-jv3q: SQLitePCLRaw <= 2.1.11 (via DicomTypeTranslation -> FAnsiSql.Legacy -> FAnsiSql.Sqlite) -->
-    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.14" />
-    <PackageVersion Include="SQLitePCLRaw.core" Version="2.1.14" />
+    <!-- FAnsiSql.Legacy (via DicomTypeTranslation) 3.7.0 brings patched drivers: MySqlConnector 2.6.2 (GHSA-473q-m89c-ghf8),
+         System.Security.Cryptography.Pkcs 10.0.14 (GHSA-846f-f764-76mx), SQLitePCLRaw 3.0.5 (GHSA-2m69-gcr7-jv3q) -->
+    <PackageVersion Include="FAnsiSql.Legacy" Version="3.7.0" />
   </ItemGroup>
 </Project>
