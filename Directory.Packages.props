@@ -24,7 +24,7 @@
     <!-- SynthDicom Dependencies -->
     <PackageVersion Include="fo-dicom" Version="5.2.1" />
     <PackageVersion Include="HIC.SynthEHR" Version="2.0.1" />
-    <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.11" />
+    <PackageVersion Include="SixLabors.ImageSharp" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
 
     <!-- BadDicom Dependencies -->
