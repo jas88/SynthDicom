@@ -27,7 +27,7 @@ jobs:
           # .NET 10 runtime for the net10.0 test run and BadDicom
           dotnet-version: 10.0.x
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: csharp
           queries: +security-and-quality
@@ -49,7 +49,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:csharp"
           upload: False
@@ -63,7 +63,7 @@ jobs:
           input: sarif-results/csharp.sarif
           output: sarif-results/csharp.sarif
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-results/csharp.sarif
       - name: Package
