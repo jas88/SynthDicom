@@ -1,0 +1,11 @@
+coverage:
+  status:
+    project:
+      default:
+        # Compare against the base commit, but tolerate small fluctuations
+        # (e.g. coverage tool upgrades counting lines slightly differently)
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: auto
