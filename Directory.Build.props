@@ -4,7 +4,8 @@
 
   <!-- Repository-specific overrides -->
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <!-- Supported .NET releases: 10 (LTS, to Nov 2028) and 11 (STS, to Nov 2028) -->
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <!-- Override MIT default - this repo is GPL-3.0 licensed -->
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <!-- Keep ImplicitUsings disabled (local override) -->
