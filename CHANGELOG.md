@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Pixel data text is now rendered with a built-in 8x8 bitmap font (public domain font8x8) instead of ImageSharp; generated pixel data differs from previous versions
+- Frame labels on multi-frame images are drawn on a separate line below the UID
+
+### Removed
+- SixLabors.ImageSharp and SixLabors.ImageSharp.Drawing dependencies
+- Unused internal `BitmapToDicom.ConvertToMultiFrame`
+
 ## [1.0.0] - 2025-01-23
 
 ### 🎉 First Major Release - Complete Modernization
