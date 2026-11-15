@@ -17,8 +17,6 @@
 	<ItemGroup>
 		<PackageReference Include="fo-dicom" />
 		<PackageReference Include="HIC.SynthEHR" />
-		<PackageReference Include="SixLabors.ImageSharp" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\"/>

@@ -11,9 +11,6 @@
 | ------- | ------------|  ------- | ------- | -------------------------- |
 | HIC.SynthEHR | [GitHub](https://github.com/jas88/SynthEHR) | [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html) | Handles generating baseline random data (patient date of birth, CHI numbers etc)| |
 | fo-dicom | [GitHub](https://github.com/fo-dicom/fo-dicom) |[MS-PL](https://opensource.org/licenses/MS-PL) | Handles reading/writing dicom tags from dicom datasets | |
-| fo-dicom.Imaging.ImageSharp | [GitHub](https://github.com/fo-dicom/fo-dicom) |[MS-PL](https://opensource.org/licenses/MS-PL) | Handles imaging aspects with fo-dicom | |
-| SixLabors.ImageSharp | [GitHub](https://github.com/SixLabors/ImageSharp) | [Apache 2.0](https://github.com/SixLabors/ImageSharp/blob/main/LICENSE) | Platform-independent replacement for legacy Windows-only System.Drawing.Common | |
-| SixLabors.ImageSharp.Drawing | [GitHub](https://github.com/SixLabors/ImageSharp.Drawing) | [Apache 2.0](https://github.com/SixLabors/ImageSharp/blob/main/LICENSE) | Font handling for ImageSharp | |
 | Microsoft.SourceLink.GitHub | [GitHub](https://github.com/dotnet/sourcelink) | [Apache License 2.0](https://github.com/dotnet/sourcelink/blob/master/License.txt) | Enables source debugging of project nuget package| |
 | Microsoft.CodeAnalysis.CSharp | [GitHub](https://github.com/dotnet/roslyn) | [MIT](https://opensource.org/licenses/MIT) | Roslyn C# compiler for source generators | |
 | Microsoft.CodeAnalysis.Analyzers | [GitHub](https://github.com/dotnet/roslyn-analyzers) | [MIT](https://opensource.org/licenses/MIT) | Code analyzers for source generator development | |
