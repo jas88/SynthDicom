@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+          # .NET 10 runtime for the net10.0 test run and BadDicom
+          dotnet-version: 10.0.x
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:

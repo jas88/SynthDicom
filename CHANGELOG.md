@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **BREAKING**: SynthDicom now targets `net10.0` and `net11.0` (previously `net9.0`, which reached end of support on 10 November 2026)
+- BadDicom now targets `net10.0`
 - Pixel data text is now rendered with a built-in 8x8 bitmap font (public domain font8x8) instead of ImageSharp; generated pixel data differs from previous versions
 - Frame labels on multi-frame images are drawn on a separate line below the UID
 - BadDicom now uses the `DicomTypeTranslation` 5.0.1 package (jas88 fork) instead of `HIC.DicomTypeTranslation` 4.1.5, which also replaces `HIC.FAnsiSql` with `FAnsiSql.Legacy`

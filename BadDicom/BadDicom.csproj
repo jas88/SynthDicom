@@ -3,6 +3,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
+    <!-- Self-contained CLI: single LTS target rather than the library's multi-targeting -->
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <StartupObject>BadDicom.Program</StartupObject>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
