@@ -10,10 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Pixel data text is now rendered with a built-in 8x8 bitmap font (public domain font8x8) instead of ImageSharp; generated pixel data differs from previous versions
 - Frame labels on multi-frame images are drawn on a separate line below the UID
+- BadDicom now uses the `DicomTypeTranslation` 5.0.1 package (jas88 fork) instead of `HIC.DicomTypeTranslation` 4.1.5, which also replaces `HIC.FAnsiSql` with `FAnsiSql.Legacy`
+- Bump fo-dicom from 5.2.1 to 5.2.6 (required by DicomTypeTranslation 5.0.1)
+
+### Security
+- Pin transitive SQLitePCLRaw packages to 2.1.14 (GHSA-2m69-gcr7-jv3q)
 
 ### Removed
 - SixLabors.ImageSharp and SixLabors.ImageSharp.Drawing dependencies
 - Unused internal `BitmapToDicom.ConvertToMultiFrame`
+- Transitive `MongoDB.Driver` dependency of BadDicom, and with it `SharpCompress`, `DnsClient`, `Snappier` and `ZstdSharp.Port`
 
 ## [1.0.0] - 2025-01-23
 
