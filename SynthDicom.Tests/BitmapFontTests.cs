@@ -19,11 +19,13 @@ internal sealed class BitmapFontTests
         var rgb = Render("A", 8, 8, 1);
 
         for (var y = 0; y < 8; y++)
-        for (var x = 0; x < 8; x++)
         {
-            var expected = (GlyphA[y] & (1 << x)) != 0 ? (byte)0xFF : (byte)0x00;
-            var i = (y * 8 + x) * 3;
-            Assert.That(new[] { rgb[i], rgb[i + 1], rgb[i + 2] }, Is.All.EqualTo(expected), $"Pixel ({x},{y})");
+            for (var x = 0; x < 8; x++)
+            {
+                var expected = (GlyphA[y] & (1 << x)) != 0 ? (byte)0xFF : (byte)0x00;
+                var i = (y * 8 + x) * 3;
+                Assert.That(new[] { rgb[i], rgb[i + 1], rgb[i + 2] }, Is.All.EqualTo(expected), $"Pixel ({x},{y})");
+            }
         }
     }
 
@@ -34,8 +36,10 @@ internal sealed class BitmapFontTests
         var scaled = Render("A", 16, 16, 2);
 
         for (var y = 0; y < 16; y++)
-        for (var x = 0; x < 16; x++)
-            Assert.That(scaled[(y * 16 + x) * 3], Is.EqualTo(reference[(y / 2 * 8 + x / 2) * 3]), $"Pixel ({x},{y})");
+        {
+            for (var x = 0; x < 16; x++)
+                Assert.That(scaled[(y * 16 + x) * 3], Is.EqualTo(reference[(y / 2 * 8 + x / 2) * 3]), $"Pixel ({x},{y})");
+        }
     }
 
     [Test]
@@ -153,8 +157,10 @@ internal sealed class BitmapFontTests
     {
         var block = new byte[size * size];
         for (var y = 0; y < size; y++)
-        for (var x = 0; x < size; x++)
-            block[y * size + x] = rgb[((y0 + y) * width + x0 + x) * 3];
+        {
+            for (var x = 0; x < size; x++)
+                block[y * size + x] = rgb[((y0 + y) * width + x0 + x) * 3];
+        }
         return block;
     }
 
