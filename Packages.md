@@ -15,7 +15,7 @@
 | Microsoft.CodeAnalysis.CSharp | [GitHub](https://github.com/dotnet/roslyn) | [MIT](https://opensource.org/licenses/MIT) | Roslyn C# compiler for source generators | |
 | Microsoft.CodeAnalysis.Analyzers | [GitHub](https://github.com/dotnet/roslyn-analyzers) | [MIT](https://opensource.org/licenses/MIT) | Code analyzers for source generator development | |
 | Microsoft.NETCore.App | [GitHub](https://github.com/dotnet/runtime) |[MIT](https://opensource.org/licenses/MIT) | | .Net Core API|
-| HIC.DicomTypeTranslation | [GitHub](https://github.com/jas88/DicomTypeTranslation)  | [GPL 3.0](https://github.com/jas88/DicomTypeTranslation/blob/master/LICENSE) | Translates DICOM type representations | |
+| DicomTypeTranslation | [GitHub](https://github.com/jas88/DicomTypeTranslation)  | [GPL 3.0](https://github.com/jas88/DicomTypeTranslation/blob/master/LICENSE) | Translates DICOM type representations | |
 | YamlDotNet | [GitHub](https://github.com/aaubry/YamlDotNet)  | [MIT](https://opensource.org/licenses/MIT) |Loading configuration files|
 | Vecc.YamlDotNet.Analyzers.StaticGenerator | [GitHub](https://github.com/aaubry/YamlDotNet)  | [MIT](https://opensource.org/licenses/MIT) |Extension to YamlDotNet for static processing|
 | CommandLineParser | [GitHub](https://github.com/commandlineparser/commandline) | [MIT](https://opensource.org/licenses/MIT) | Allows command line arguments for main client application and CLI executables |

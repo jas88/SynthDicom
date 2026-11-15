@@ -183,10 +183,10 @@ internal sealed class Program
             return -2;
         }
 
-        ImplementationManager.Load<MySqlImplementation>();
-        ImplementationManager.Load<PostgreSqlImplementation>();
-        ImplementationManager.Load<OracleImplementation>();
-        ImplementationManager.Load<MicrosoftSQLImplementation>();
+        MySqlImplementation.EnsureLoaded();
+        PostgreSqlImplementation.EnsureLoaded();
+        OracleImplementation.EnsureLoaded();
+        MicrosoftSQLImplementation.EnsureLoaded();
 
         var server = new DiscoveredServer(configDatabase.ConnectionString, configDatabase.DatabaseType);
 
@@ -261,7 +261,8 @@ internal sealed class Program
                     else
                     {
                         //we will make this a primary key later on
-                        col.Single().IsPrimaryKey = false;
+                        var pkIndex = Array.FindIndex(tableSchema.Columns, c => c.IsPrimaryKey);
+                        tableSchema.Columns[pkIndex] = tableSchema.Columns[pkIndex] with { IsPrimaryKey = false };
                         Console.WriteLine($"MakeDistinct will apply to '{pks[i]}' on '{tbl.GetFullyQualifiedName()}'");
                     }
                 }
@@ -366,7 +367,8 @@ internal sealed class Program
                     foreach (var item in dataset)
                     {
                         var column = DicomTypeTranslaterReader.GetColumnNameForTag(item.Tag, false);
-                        var value = DicomTypeTranslater.Flatten(DicomTypeTranslaterReader.GetCSharpValue(dataset, item));
+                        var csharpValue = DicomTypeTranslaterReader.GetCSharpValue(dataset, item);
+                        var value = csharpValue == null ? null : DicomTypeTranslater.Flatten(csharpValue);
 
                         foreach (var row in rows.Where(row=>row.Table.Columns.Contains(column)))
                             row[column] = value ?? DBNull.Value;
