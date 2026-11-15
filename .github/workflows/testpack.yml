@@ -85,7 +85,7 @@ jobs:
         run: |
           dotnet nuget push ./SynthDicom/bin/Release/SynthDicom.*.nupkg -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json
       - name: Upload release binaries
-        uses: svenstaro/upload-release-action@2.9.0
+        uses: svenstaro/upload-release-action@2.11.5
         if: contains(github.ref, 'refs/tags/v')
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
