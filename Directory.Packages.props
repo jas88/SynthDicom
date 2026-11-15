@@ -22,7 +22,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
 
     <!-- SynthDicom Dependencies -->
-    <PackageVersion Include="fo-dicom" Version="5.2.1" />
+    <PackageVersion Include="fo-dicom" Version="5.2.6" />
     <PackageVersion Include="HIC.SynthEHR" Version="2.0.1" />
 
     <!-- BadDicom Dependencies -->
