@@ -186,7 +186,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// </summary>
     /// <param name="p">Person demographics and information for the patient</param>
     /// <returns>Array containing the generated Study UID as the single element</returns>
-    public override object?[] GenerateTestDataRow(Person p)
+    public override object[] GenerateTestDataRow(Person p)
     {
         ArgumentNullException.ThrowIfNull(p);
 
@@ -231,7 +231,9 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         }
 
         //in the CSV write only the StudyUID
-        return [studyUID];
+        // studyUID is null if no images were generated. SynthEHR.Core 3.0 declares the return type as non-nullable
+        // object[], but its consumers handle null elements (empty CSV field / DBNull), so keep returning null.
+        return [studyUID!];
     }
 
     /// <summary>

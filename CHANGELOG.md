@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Switch from `HIC.SynthEHR` 2.0.1 to `SynthEHR.Core` 3.0.0 (jas88 fork)
+- **BREAKING** (seeded output): for the same `-s` seed, generated `PatientID` (CHI) values differ from earlier versions, because SynthEHR 3.0 fixed off-by-one ranges in its CHI digit generation. All other seeded tag values are unchanged, and seeded runs remain reproducible within this version. DICOM UIDs are still never affected by the seed
+- Reference `CsvHelper` 33.0.1 directly (previously only a transitive dependency of `HIC.SynthEHR`)
 - **BREAKING**: SynthDicom now targets `net10.0` and `net11.0` (previously `net9.0`, which reached end of support on 10 November 2026)
 - BadDicom now targets `net10.0`
 - Pixel data text is now rendered with a built-in 8x8 bitmap font (public domain font8x8) instead of ImageSharp; generated pixel data differs from previous versions

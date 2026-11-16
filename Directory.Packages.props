@@ -24,7 +24,9 @@
 
     <!-- SynthDicom Dependencies -->
     <PackageVersion Include="fo-dicom" Version="5.2.6" />
-    <PackageVersion Include="HIC.SynthEHR" Version="2.0.1" />
+    <PackageVersion Include="SynthEHR.Core" Version="3.0.0" />
+    <!-- Used directly for the Csv output mode; previously only available transitively via HIC.SynthEHR -->
+    <PackageVersion Include="CsvHelper" Version="33.0.1" />
 
     <!-- BadDicom Dependencies -->
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />

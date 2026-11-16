@@ -594,4 +594,39 @@ public class DicomDataGeneratorTests
                 "Patient ID should be anonymized");
         });
     }
+
+    /// <summary>
+    /// When no images are generated (e.g. <see cref="DicomDataGenerator.MaximumImages"/> exhausted) the row holds a
+    /// null study UID. SynthEHR.Core's base class consumers must turn that into an empty CSV field / DBNull.
+    /// </summary>
+    [Test]
+    public void Test_GenerateTestDataRow_NoImages_NullStudyUidHandledByConsumers()
+    {
+        var r = new Random(500);
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = true, MaximumImages = 0 };
+
+        var people = new PersonCollection();
+        people.GeneratePeople(1, r);
+
+        var row = generator.GenerateTestDataRow(people.People[0]);
+
+        var dt = generator.GetDataTable(people, 1);
+
+        var file = new FileInfo(Path.Join(TestContext.CurrentContext.WorkDirectory, $"{nameof(Test_GenerateTestDataRow_NoImages_NullStudyUidHandledByConsumers)}.csv"));
+        generator.GenerateTestDataFile(people, file, 1);
+        var lines = File.ReadAllLines(file.FullName);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(row, Has.Length.EqualTo(1));
+            Assert.That(row[0], Is.Null, "No images generated, so there is no study UID");
+
+            Assert.That(dt.Rows, Has.Count.EqualTo(1));
+            Assert.That(dt.Rows[0][0], Is.EqualTo(DBNull.Value), "DataTable consumer should store DBNull");
+
+            Assert.That(lines, Has.Length.EqualTo(2), "Header plus one row");
+            Assert.That(lines[0], Is.EqualTo("Studies Generated"));
+            Assert.That(lines[1], Is.Empty, "CSV consumer should write an empty field");
+        });
+    }
 }

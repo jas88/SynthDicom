@@ -9,7 +9,8 @@
 
 | Package | Source Code |  License | Purpose | Additional Risk Assessment |
 | ------- | ------------|  ------- | ------- | -------------------------- |
-| HIC.SynthEHR | [GitHub](https://github.com/jas88/SynthEHR) | [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html) | Handles generating baseline random data (patient date of birth, CHI numbers etc)| |
+| SynthEHR.Core | [GitHub](https://github.com/jas88/SynthEHR) | [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html) | Handles generating baseline random data (patient date of birth, CHI numbers etc)| |
+| CsvHelper | [GitHub](https://github.com/JoshClose/CsvHelper) | [MS-PL / Apache 2.0](https://github.com/JoshClose/CsvHelper/blob/master/LICENSE.txt) | Writes the study/series/image CSV files in Csv output mode | |
 | fo-dicom | [GitHub](https://github.com/fo-dicom/fo-dicom) |[MS-PL](https://opensource.org/licenses/MS-PL) | Handles reading/writing dicom tags from dicom datasets | |
 | Microsoft.CodeAnalysis.CSharp | [GitHub](https://github.com/dotnet/roslyn) | [MIT](https://opensource.org/licenses/MIT) | Roslyn C# compiler for source generators | |
 | Microsoft.CodeAnalysis.Analyzers | [GitHub](https://github.com/dotnet/roslyn-analyzers) | [MIT](https://opensource.org/licenses/MIT) | Code analyzers for source generator development | |
