@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-15
+
 ### Changed
 - Switch from `HIC.SynthEHR` 2.0.1 to `SynthEHR.Core` 3.0.0 (jas88 fork)
 - **BREAKING** (seeded output): for the same `-s` seed, generated `PatientID` (CHI) values differ from earlier versions, because SynthEHR 3.0 fixed off-by-one ranges in its CHI digit generation. All other seeded tag values are unchanged, and seeded runs remain reproducible within this version. DICOM UIDs are still never affected by the seed
@@ -256,7 +258,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for PatientAge, Modality, Address, UIDs, StudyDate/Time
 - Support for pixel data / NoPixels flag
 
-[Unreleased]: https://github.com/jas88/SynthDicom/compare/v0.1.2...main
+[Unreleased]: https://github.com/jas88/SynthDicom/compare/v2.0.0...main
+[2.0.0]: https://github.com/jas88/SynthDicom/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/jas88/SynthDicom/compare/v0.1.2...v1.0.0
 [0.1.2]: https://github.com/jas88/SynthDicom/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/jas88/SynthDicom/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jas88/SynthDicom/compare/v0.0.16...v0.1.0
