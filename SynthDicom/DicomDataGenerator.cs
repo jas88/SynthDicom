@@ -185,7 +185,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// Generates a complete study with all series and images for a given person and writes them to disk or CSV.
     /// </summary>
     /// <param name="person">Person demographics and information for the patient</param>
-    /// <returns>Array containing the generated Study UID as the single element, or null if no images were generated</returns>
+    /// <returns>A one-element array (never null) whose element is the generated Study UID, or null if no images were generated</returns>
     public override object?[] GenerateTestDataRow(Person person)
     {
         ArgumentNullException.ThrowIfNull(person);
