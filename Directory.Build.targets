@@ -1,0 +1,4 @@
+<Project>
+  <!-- Shared targets (AOT/trimming properties that depend on TargetFramework) -->
+  <Import Project="build-standards/Directory.Build.targets.shared" />
+</Project>

@@ -15,6 +15,8 @@
     <PackageVersion Include="NUnit.Analyzers" Version="4.7.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
+    <!-- Referenced by build-standards shared props for test projects; coverage is still collected with coverlet -->
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1" />
 
     <!-- Source Generators -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" />
