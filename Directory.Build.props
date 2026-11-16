@@ -24,6 +24,8 @@
   <!-- Test project package versions -->
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <!-- build-standards no longer adds coverlet; CI collects coverage with 'XPlat Code Coverage' -->
+    <PackageReference Include="coverlet.collector" PrivateAssets="All" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Analyzers">
       <PrivateAssets>all</PrivateAssets>
