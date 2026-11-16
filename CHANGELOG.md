@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-16
+
+### Fixed
+- Require `SynthEHR.Core` 3.1.0 (previously 3.0.1). SynthEHR.Core 3.0.0 and 3.0.1 are deprecated: their generated EHR data classes returned corrupted text after any non-ASCII character (most prescribing names and descriptions) and culture-dependent numbers. SynthDicom's own output was not affected, as it only uses SynthEHR's person, CHI and address generation, but applications that also generate SynthEHR datasets now resolve a fixed version.
+- 3.1.0 also matches SynthDicom's target frameworks (`net10.0`, `net11.0`)
+
+
 ## [2.0.0] - 2026-11-15
 
 ### Changed
@@ -259,7 +266,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for PatientAge, Modality, Address, UIDs, StudyDate/Time
 - Support for pixel data / NoPixels flag
 
-[Unreleased]: https://github.com/jas88/SynthDicom/compare/v2.0.0...main
+[Unreleased]: https://github.com/jas88/SynthDicom/compare/v2.0.1...main
+[2.0.1]: https://github.com/jas88/SynthDicom/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/jas88/SynthDicom/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/jas88/SynthDicom/compare/v0.1.2...v1.0.0
 [0.1.2]: https://github.com/jas88/SynthDicom/compare/v0.1.1...v0.1.2
