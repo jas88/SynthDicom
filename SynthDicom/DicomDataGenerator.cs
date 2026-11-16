@@ -184,11 +184,11 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// <summary>
     /// Generates a complete study with all series and images for a given person and writes them to disk or CSV.
     /// </summary>
-    /// <param name="p">Person demographics and information for the patient</param>
-    /// <returns>Array containing the generated Study UID as the single element</returns>
-    public override object[] GenerateTestDataRow(Person p)
+    /// <param name="person">Person demographics and information for the patient</param>
+    /// <returns>A one-element array (never null) whose element is the generated Study UID, or null if no images were generated</returns>
+    public override object?[] GenerateTestDataRow(Person person)
     {
-        ArgumentNullException.ThrowIfNull(p);
+        ArgumentNullException.ThrowIfNull(person);
 
         if(!csvInitialized && Csv)
             InitialiseCSVOutput();
@@ -196,7 +196,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         //The currently extracting study
         string? studyUID = null;
 
-        foreach (var ds in GenerateStudyImages(p, out var study))
+        foreach (var ds in GenerateStudyImages(person, out var study))
         {
             //don't generate more than the maximum number of images
             if (MaximumImages-- <= 0)
@@ -230,10 +230,8 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             }
         }
 
-        //in the CSV write only the StudyUID
-        // studyUID is null if no images were generated. SynthEHR.Core 3.0 declares the return type as non-nullable
-        // object[], but its consumers handle null elements (empty CSV field / DBNull), so keep returning null.
-        return [studyUID!];
+        //in the CSV write only the StudyUID (null if no images were generated)
+        return [studyUID];
     }
 
     /// <summary>
