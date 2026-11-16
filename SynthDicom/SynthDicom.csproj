@@ -8,7 +8,7 @@
 		<PackageDescription>Generate large volumes of complex (in terms of tags) DICOM images for integration/stress testing ETL and image management tools.  SynthDicom generates DICOM images on demand based on an anonymous aggregate model of tag data found in Scottish medical imaging with a small memory footprint.</PackageDescription>
 		<PackageProjectUrl>https://github.com/jas88/SynthDicom</PackageProjectUrl>
 		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
-		<Copyright>Copyright 2019</Copyright>
+		<Copyright>Copyright (c) 2018 - 2026 Health Informatics Centre, University of Dundee</Copyright>
 		<PackageTags>DICOM,Test Data,Random,Synthetic Data,Health</PackageTags>
 		<IsAotCompatible>true</IsAotCompatible>
 		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>

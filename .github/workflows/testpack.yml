@@ -114,7 +114,7 @@ jobs:
           done
       - name: NuGet login (Trusted Publishing)
         id: nuget-login
-        uses: NuGet/login@v1
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: jas88
       - name: Publish to NuGet
@@ -132,7 +132,7 @@ jobs:
           name: SynthDicom-dist
           path: dist
       - name: Upload release binaries
-        uses: svenstaro/upload-release-action@2.11.5
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # 2.11.5
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/baddicom*
