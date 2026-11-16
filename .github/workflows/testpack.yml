@@ -87,15 +87,15 @@ jobs:
           name: SynthDicom-dist
           path: dist/
 
-  # Runs only for v* tags, in its own job, so PR/branch builds never hold
-  # id-token or contents write permissions.
+  # Tag-only jobs, so PR/branch builds never hold id-token or contents write
+  # permissions. NuGet publishing (OIDC) and the GitHub release upload run in
+  # separate jobs so third-party release actions never see an id-token.
   publish:
     needs: package
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment: nuget
     permissions:
-      contents: write  # upload release binaries
       id-token: write  # NuGet Trusted Publishing (OIDC)
     steps:
       - name: Download artifacts
@@ -103,13 +103,15 @@ jobs:
         with:
           name: SynthDicom-dist
           path: dist
-      - name: Check tag matches package version
+      - name: Check tag matches package and binary versions
         run: |
-          EXPECTED="dist/SynthDicom.${GITHUB_REF_NAME#v}.nupkg"
-          if [ ! -f "$EXPECTED" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME expects $EXPECTED but found: $(ls -- dist/*.nupkg)"
-            exit 1
-          fi
+          VERSION="${GITHUB_REF_NAME#v}"
+          for f in "dist/SynthDicom.$VERSION.nupkg" "dist/baddicom-linux-x64-v$VERSION.tar.xz"; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME expects $f (check SharedAssemblyInfo.cs) but found: $(ls -- dist)"
+              exit 1
+            fi
+          done
       - name: NuGet login (Trusted Publishing)
         id: nuget-login
         uses: NuGet/login@v1
@@ -117,6 +119,18 @@ jobs:
           user: jas88
       - name: Publish to NuGet
         run: dotnet nuget push "dist/SynthDicom.${GITHUB_REF_NAME#v}.nupkg" --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # upload release binaries
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: SynthDicom-dist
+          path: dist
       - name: Upload release binaries
         uses: svenstaro/upload-release-action@2.11.5
         with:
