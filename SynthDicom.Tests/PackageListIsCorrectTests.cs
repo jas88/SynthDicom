@@ -91,10 +91,10 @@ public sealed class PackageListIsCorrectTests
     /// <returns></returns>
     private static string GetPackagesMarkdown(DirectoryInfo root)
     {
-        var path = root.EnumerateFiles("packages.md", EnumerationOptions).Select(static f => f.FullName)
-            .SingleOrDefault();
-        Assert.That(path, Is.Not.Null, "Could not find packages.md");
-        return path;
+        var paths = root.EnumerateFiles("packages.md", EnumerationOptions).Select(static f => f.FullName)
+            .ToList();
+        Assert.That(paths, Has.Count.EqualTo(1), "Expected exactly one packages.md");
+        return paths[0];
     }
 
 }
