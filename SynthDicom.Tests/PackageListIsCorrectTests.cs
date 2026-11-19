@@ -10,14 +10,14 @@ namespace SynthDicom.Tests;
 /// </summary>
 public sealed class PackageListIsCorrectTests
 {
-    private static readonly EnumerationOptions EnumerationOptions = new() { RecurseSubdirectories = true,MatchCasing = MatchCasing.CaseInsensitive,IgnoreInaccessible = true};
+    private static readonly EnumerationOptions EnumerationOptions = new() { RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive, IgnoreInaccessible = true };
 
     //<PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
-    private static readonly Regex RPackageRef = new(@"<PackageReference\s+Include=""(.*)""\s+Version=""([^""]*)""", RegexOptions.IgnoreCase|RegexOptions.Compiled|RegexOptions.CultureInvariant);
+    private static readonly Regex RPackageRef = new(@"<PackageReference\s+Include=""(.*)""\s+Version=""([^""]*)""", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     // | Org.SomePackage |
     //
-    private static readonly Regex RMarkdownEntry = new(@"^\|\s*\[?([^ |\]]+)(\]\([^)]+\))?\s*\|", RegexOptions.IgnoreCase|RegexOptions.Compiled|RegexOptions.CultureInvariant);
+    private static readonly Regex RMarkdownEntry = new(@"^\|\s*\[?([^ |\]]+)(\]\([^)]+\))?\s*\|", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
 
     /// <summary>
@@ -25,22 +25,22 @@ public sealed class PackageListIsCorrectTests
     /// </summary>
     /// <param name="rootPath"></param>
     [TestCase]
-    public void TestPackagesDocumentCorrect(string? rootPath=null)
+    public void TestPackagesDocumentCorrect(string? rootPath = null)
     {
-        var root= FindRoot(rootPath);
+        var root = FindRoot(rootPath);
         var undocumented = new StringBuilder();
 
         // Extract the named packages from PACKAGES.md
         var packagesMarkdown = File.ReadAllLines(GetPackagesMarkdown(root))
             .Select(static line => RMarkdownEntry.Match(line))
-            .Where(static m=>m.Success)
+            .Where(static m => m.Success)
             .Select(static m => m.Groups[1].Value)
             .ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
         // Extract the named packages from csproj files, then subtract those listed in PACKAGES.md (should be empty)
         var undocumentedPackages = GetCsprojFiles(root).Select(File.ReadAllText)
             .SelectMany(static s => RPackageRef.Matches(s))
-            .Select(static m=>m.Groups[1].Value).Except(packagesMarkdown).Select(BuildRecommendedMarkdownLine);
+            .Select(static m => m.Groups[1].Value).Except(packagesMarkdown).Select(BuildRecommendedMarkdownLine);
         undocumented.AppendJoin(Environment.NewLine, undocumentedPackages);
 
         Assert.That(undocumented.ToString(), Is.Empty);
@@ -64,7 +64,8 @@ public sealed class PackageListIsCorrectTests
     {
         if (path != null)
         {
-            if (!Path.IsPathRooted(path)) path = Path.Join(TestContext.CurrentContext.TestDirectory, path);
+            if (!Path.IsPathRooted(path))
+                path = Path.Join(TestContext.CurrentContext.TestDirectory, path);
             return new DirectoryInfo(path);
         }
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

@@ -1,4 +1,4 @@
-﻿using FAnsi;
+using FAnsi;
 using YamlDotNet.Serialization;
 
 namespace BadDicom.Configuration;

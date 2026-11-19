@@ -1,18 +1,18 @@
-﻿using SynthEHR.Datasets;
-using System.IO;
 using System.Globalization;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CsvHelper;
+using SynthEHR.Datasets;
 
 namespace SynthDicom;
 
 /// <summary>
 /// <see cref="DataGenerator"/> which produces dicom files on disk and accompanying metadata
 /// </summary>
-public class DicomDataGenerator : DataGenerator,IDisposable
+public class DicomDataGenerator : DataGenerator, IDisposable
 {
     /// <summary>
     /// Location on disk to output dicom files to
@@ -29,12 +29,12 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// </summary>
     private bool DevNull { get; }
 
-    private static readonly string DevNullPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)?"NUL":"/dev/null";
+    private static readonly string DevNullPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null";
 
     /// <summary>
     /// Set to true to run <see cref="DicomAnonymizer"/> on the generated <see cref="DicomDataset"/> before writing to disk.
     /// </summary>
-    public bool Anonymise {get;set;}
+    public bool Anonymise { get; set; }
 
     /// <summary>
     /// True to output Study / Series / Image level CSV files containing all the tag data.  Setting this option
@@ -45,7 +45,8 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     /// <summary>
     /// The subdirectories layout to put dicom files into when writing to disk
     /// </summary>
-    public FileSystemLayout Layout{
+    public FileSystemLayout Layout
+    {
         get => _pathProvider.Layout;
         set => _pathProvider = new FileSystemLayoutProvider(value);
     }
@@ -190,7 +191,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     {
         ArgumentNullException.ThrowIfNull(person);
 
-        if(!csvInitialized && Csv)
+        if (!csvInitialized && Csv)
             InitialiseCSVOutput();
 
         //The currently extracting study
@@ -207,7 +208,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             studyUID = study.StudyUID.UID; //all images will have the same study
 
             // ACH : additions to produce some CSV data
-            if(Csv)
+            if (Csv)
                 AddDicomDatasetToCSV(
                     ds,
                     _studyWriter ?? throw new InvalidOperationException(),
@@ -217,7 +218,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
             {
                 var f = new DicomFile(ds);
 
-                FileInfo? fi=null;
+                FileInfo? fi = null;
                 if (!DevNull)
                 {
                     fi = _pathProvider.GetPath(OutputDir!, f.Dataset);
@@ -256,7 +257,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         ArgumentNullException.ThrowIfNull(p);
 
         //generate a study
-        study = new Study(this,p,GetRandomModality(r),r);
+        study = new Study(this, p, GetRandomModality(r), r);
 
         // Calculate total image count for array pooling (sum of all series image counts)
         var totalImages = study.Series.Sum(s => s.NumberOfSeriesRelatedInstances);
@@ -294,7 +295,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         ArgumentNullException.ThrowIfNull(p);
 
         //generate a study
-        var study = new Study(this,p,GetRandomModality(r),r);
+        var study = new Study(this, p, GetRandomModality(r), r);
 
         foreach (var series in study)
         {
@@ -322,7 +323,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
         //get a random modality
         var modality = GetRandomModality(random);
-        return GenerateTestDataset(p,new Study(this,p,modality,random).Series[0]);
+        return GenerateTestDataset(p, new Study(this, p, modality, random).Series[0]);
     }
 
     /// <summary>
@@ -341,7 +342,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
         //get a random modality
         var modality = GetRandomModality(random);
-        return Task.FromResult(GenerateTestDataset(p,new Study(this,p,modality,random).Series[0]));
+        return Task.FromResult(GenerateTestDataset(p, new Study(this, p, modality, random).Series[0]));
     }
 
     private ModalityStats GetRandomModality(Random random) =>
@@ -364,12 +365,12 @@ public class DicomDataGenerator : DataGenerator,IDisposable
 
         var ds = new DicomDataset();
 
-        ds.AddOrUpdate(DicomTag.StudyInstanceUID,series.Study.StudyUID);
-        ds.AddOrUpdate(DicomTag.SeriesInstanceUID,series.SeriesUID);
+        ds.AddOrUpdate(DicomTag.StudyInstanceUID, series.Study.StudyUID);
+        ds.AddOrUpdate(DicomTag.SeriesInstanceUID, series.SeriesUID);
 
         var sopInstanceUID = UIDAllocator.GenerateSOPInstanceUID();
-        ds.AddOrUpdate(DicomTag.SOPInstanceUID,sopInstanceUID);
-        ds.AddOrUpdate(DicomTag.SOPClassUID , DicomUID.SecondaryCaptureImageStorage);
+        ds.AddOrUpdate(DicomTag.SOPInstanceUID, sopInstanceUID);
+        ds.AddOrUpdate(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage);
 
         //patient details
         ds.AddOrUpdate(DicomTag.PatientID, p.CHI);
@@ -382,7 +383,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
                 $"{p.Address.Line1} {p.Address.Line2} {p.Address.Line3} {p.Address.Line4} {p.Address.Postcode.Value}";
 
             ds.AddOrUpdate(DicomTag.PatientAddress,
-                s[..Math.Min(s.Length,64)] //LO only allows 64 characters
+                s[..Math.Min(s.Length, 64)] //LO only allows 64 characters
             );
         }
 
@@ -392,13 +393,13 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         ds.AddOrUpdate(new DicomDate(DicomTag.SeriesDate, series.SeriesDate));
         ds.AddOrUpdate(new DicomTime(DicomTag.SeriesTime, DateTime.Today + series.SeriesTime));
 
-        ds.AddOrUpdate(DicomTag.Modality,series.Modality);
+        ds.AddOrUpdate(DicomTag.Modality, series.Modality);
         ds.AddOrUpdate(DicomTag.AccessionNumber, series.Study.AccessionNumber ?? "");
 
-        if(series.Study.StudyDescription != null)
-            ds.AddOrUpdate(DicomTag.StudyDescription,series.Study.StudyDescription);
+        if (series.Study.StudyDescription != null)
+            ds.AddOrUpdate(DicomTag.StudyDescription, series.Study.StudyDescription);
 
-        if(series.SeriesDescription != null)
+        if (series.SeriesDescription != null)
             ds.AddOrUpdate(DicomTag.SeriesDescription, series.SeriesDescription);
 
         if (series.BodyPartExamined != null)
@@ -407,11 +408,12 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         // Calculate the age of the patient at the time the series was taken
         var age = series.SeriesDate.Year - p.DateOfBirth.Year;
         // Go back to the year the person was born in case of a leap year
-        if (p.DateOfBirth.Date > series.SeriesDate.AddYears(-age)) age--;
+        if (p.DateOfBirth.Date > series.SeriesDate.AddYears(-age))
+            age--;
         ds.AddOrUpdate(new DicomAgeString(DicomTag.PatientAge, $"{age:000}Y"));
 
-        if(!NoPixels)
-            PixelDrawer.DrawBlackBoxWithWhiteText(ds,500,500,sopInstanceUID.UID,NumberOfFrames);
+        if (!NoPixels)
+            PixelDrawer.DrawBlackBoxWithWhiteText(ds, 500, 500, sopInstanceUID.UID, NumberOfFrames);
 
         // Additional DICOM tags added for the generation of CSV files
         ds.AddOrUpdate(DicomTag.ModalitiesInStudy, series.Modality);
@@ -436,8 +438,8 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         ds.AddOrUpdate(DicomTag.AcquisitionNumber, "0");
         ds.AddOrUpdate(DicomTag.AcquisitionDate, series.SeriesDate);
         ds.AddOrUpdate(new DicomTime(DicomTag.AcquisitionTime, DateTime.Today + series.SeriesTime));
-        ds.AddOrUpdate(DicomTag.ImagePositionPatient, "0","0","0");
-        ds.AddOrUpdate(new DicomDecimalString(DicomTag.PixelSpacing,"0.3","0.25"));
+        ds.AddOrUpdate(DicomTag.ImagePositionPatient, "0", "0", "0");
+        ds.AddOrUpdate(new DicomDecimalString(DicomTag.PixelSpacing, "0.3", "0.25"));
         ds.AddOrUpdate(DicomTag.FieldOfViewDimensions, "0");
         ds.AddOrUpdate(DicomTag.FieldOfViewDimensionsInFloat, "0");
         //ds.AddOrUpdate(DicomTag.TransferSyntaxUID, "1.2.840.10008.1.2"); this seems to break saving of files lets not set it
@@ -445,9 +447,10 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         ds.AddOrUpdate(DicomTag.LossyImageCompressionMethod, "ISO_10918_1");
         ds.AddOrUpdate(DicomTag.LossyImageCompressionRatio, "1");
 
-        if (!Anonymise) return ds;
+        if (!Anonymise)
+            return ds;
         _anonymiser.AnonymizeInPlace(ds);
-        ds.AddOrUpdate(DicomTag.StudyInstanceUID,series.Study.StudyUID);
+        ds.AddOrUpdate(DicomTag.StudyInstanceUID, series.Study.StudyUID);
         ds.AddOrUpdate(DicomTag.SeriesInstanceUID, series.SeriesUID);
         return ds;
     }
@@ -457,15 +460,16 @@ public class DicomDataGenerator : DataGenerator,IDisposable
     private void InitialiseCSVOutput()
     {
         // Write the headers
-        if(csvInitialized)
+        if (csvInitialized)
             return;
         csvInitialized = true;
 
-        if (OutputDir == null) return;
+        if (OutputDir == null)
+            return;
         // Create/open CSV files with proper disposal via using statements
-        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)),CultureInfo.InvariantCulture);
-        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)),CultureInfo.InvariantCulture);
-        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)),CultureInfo.InvariantCulture);
+        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)), CultureInfo.InvariantCulture);
+        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)), CultureInfo.InvariantCulture);
+        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)), CultureInfo.InvariantCulture);
 
         // Write header
         WriteData(_studyWriter, StudyTags.Select(i => i.DictionaryEntry.Keyword));
@@ -481,7 +485,7 @@ public class DicomDataGenerator : DataGenerator,IDisposable
         sw.NextRecord();
     }
 
-    private void AddDicomDatasetToCSV(DicomDataset ds,CsvWriter studies,CsvWriter series,CsvWriter images)
+    private void AddDicomDatasetToCSV(DicomDataset ds, CsvWriter studies, CsvWriter series, CsvWriter images)
     {
         if (_lastStudyUID != ds.GetString(DicomTag.StudyInstanceUID))
         {

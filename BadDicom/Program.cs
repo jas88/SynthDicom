@@ -1,4 +1,3 @@
-using CommandLine;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BadDicom.Configuration;
+using CommandLine;
 using DicomTypeTranslation;
 using DicomTypeTranslation.TableCreation;
 using FAnsi.Discovery;
@@ -50,7 +50,7 @@ internal sealed class Program
             opts.NumberOfStudies = 2000;
 
 
-        if(File.Exists(ConfigFile))
+        if (File.Exists(ConfigFile))
         {
             Config config;
 
@@ -110,10 +110,10 @@ internal sealed class Program
         try
         {
             var identifiers = GetPeople(opts, out var r);
-            using var dicomGenerator = GetDataGenerator(opts,r, out var dir);
-            Console.WriteLine($"{DateTime.Now} Starting file generation (to {dir?.FullName ?? "/dev/null"})" );
-            var targetFile = new FileInfo(dir==null?RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null" :Path.Join(dir.FullName, "DicomFiles.csv"));
-            dicomGenerator.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfStudies);
+            using var dicomGenerator = GetDataGenerator(opts, r, out var dir);
+            Console.WriteLine($"{DateTime.Now} Starting file generation (to {dir?.FullName ?? "/dev/null"})");
+            var targetFile = new FileInfo(dir == null ? RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null" : Path.Join(dir.FullName, "DicomFiles.csv"));
+            dicomGenerator.GenerateTestDataFile(identifiers, targetFile, opts.NumberOfStudies);
         }
         catch (Exception e)
         {
@@ -122,17 +122,17 @@ internal sealed class Program
             return;
         }
 
-        Console.WriteLine($"{DateTime.Now} Finished" );
+        Console.WriteLine($"{DateTime.Now} Finished");
 
         _returnCode = 0;
     }
 
-    private static DicomDataGenerator GetDataGenerator(ProgramOptions opts,Random r, out DirectoryInfo? dir)
+    private static DicomDataGenerator GetDataGenerator(ProgramOptions opts, Random r, out DirectoryInfo? dir)
     {
         //Generate the dicom files (of the modalities that the user requested)
-        var modalities = string.IsNullOrWhiteSpace(opts.Modalities)? Array.Empty<string>() :opts.Modalities.Split(",");
+        var modalities = string.IsNullOrWhiteSpace(opts.Modalities) ? Array.Empty<string>() : opts.Modalities.Split(",");
 
-        dir = opts.OutputDirectory?.Equals("/dev/null",StringComparison.Ordinal)!=false ? null : Directory.CreateDirectory(opts.OutputDirectory);
+        dir = opts.OutputDirectory?.Equals("/dev/null", StringComparison.Ordinal) != false ? null : Directory.CreateDirectory(opts.OutputDirectory);
         return new DicomDataGenerator(r, opts.OutputDirectory, modalities)
         {
             NoPixels = opts.NoPixels,
@@ -150,7 +150,7 @@ internal sealed class Program
 
         //create a cohort of people
         PersonCollection identifiers = new PersonCollection();
-        identifiers.GeneratePeople(opts.NumberOfPatients,r);
+        identifiers.GeneratePeople(opts.NumberOfPatients, r);
 
         return identifiers;
     }
@@ -231,7 +231,7 @@ internal sealed class Program
         for (var i = 0; i < batches.Length; i++)
             batches[i] = new DataTable[template.Tables.Count];
 
-        var uploaders= new IBulkCopy[batchSize][];
+        var uploaders = new IBulkCopy[batchSize][];
 
         for (var i = 0; i < uploaders.Length; i++)
             uploaders[i] = new IBulkCopy[template.Tables.Count];
@@ -284,7 +284,7 @@ internal sealed class Program
                 }
             }
 
-            if(create)
+            if (create)
             {
                 Console.WriteLine($"About to create '{tbl.GetFullyQualifiedName()}'");
                 creator.CreateTable(tbl, tableSchema);
@@ -312,14 +312,14 @@ internal sealed class Program
         for (var i = 0; i < tables.Length; i++)
         {
             var pk = pks[i];
-            if(pk == null)
+            if (pk == null)
                 continue;
 
-            Console.WriteLine( $"{DateTime.Now} Making table '{tables[i]}' distinct (this may take a long time)");
+            Console.WriteLine($"{DateTime.Now} Making table '{tables[i]}' distinct (this may take a long time)");
             var tbl = tables[i];
             tbl.MakeDistinct(500000000);
 
-            Console.WriteLine( $"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pk}'");
+            Console.WriteLine($"{DateTime.Now} Creating primary key on '{tables[i]}' of '{pk}'");
             var pkColumn = tbl.DiscoverColumn(pk);
             if (pkColumn == null)
             {
@@ -338,7 +338,7 @@ internal sealed class Program
         return 0;
     }
 
-    private static void RunBatch(PersonCollection identifiers, ProgramOptions opts, Random r,DataTable[] batches, IBulkCopy[] uploaders)
+    private static void RunBatch(PersonCollection identifiers, ProgramOptions opts, Random r, DataTable[] batches, IBulkCopy[] uploaders)
     {
         Stopwatch swGeneration = new();
         Stopwatch swReading = new();
@@ -346,13 +346,13 @@ internal sealed class Program
 
         try
         {
-            using var dicomGenerator = GetDataGenerator(opts,r, out _);
+            using var dicomGenerator = GetDataGenerator(opts, r, out _);
             for (var i = 0; i < opts.NumberOfStudies; i++)
             {
                 swGeneration.Start();
 
                 var p = identifiers.People[r.Next(identifiers.People.Length)];
-                var ds = dicomGenerator.GenerateStudyImages(p,out _);
+                var ds = dicomGenerator.GenerateStudyImages(p, out _);
 
                 swGeneration.Stop();
 
@@ -370,7 +370,7 @@ internal sealed class Program
                         var csharpValue = DicomTypeTranslaterReader.GetCSharpValue(dataset, item);
                         var value = csharpValue == null ? null : DicomTypeTranslater.Flatten(csharpValue);
 
-                        foreach (var row in rows.Where(row=>row.Table.Columns.Contains(column)))
+                        foreach (var row in rows.Where(row => row.Table.Columns.Contains(column)))
                             row[column] = value ?? DBNull.Value;
                     }
 
@@ -381,7 +381,8 @@ internal sealed class Program
                 }
 
                 //every 100 and last batch
-                if (i % 100 != 0 && i != opts.NumberOfStudies - 1) continue;
+                if (i % 100 != 0 && i != opts.NumberOfStudies - 1)
+                    continue;
                 {
                     swUploading.Start();
                     for (var j = 0; j < uploaders.Length; j++)

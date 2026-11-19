@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 namespace SynthDicom;
 
@@ -22,7 +22,7 @@ public class Study : IEnumerable<Series>
     /// <summary>
     /// The DICOM UID of this Study
     /// </summary>
-    public DicomUID StudyUID{get; }
+    public DicomUID StudyUID { get; }
 
     /// <summary>
     /// The timestamp on this Study
@@ -32,7 +32,7 @@ public class Study : IEnumerable<Series>
     /// <summary>
     /// Free-text description of this Study
     /// </summary>
-    public string? StudyDescription {get; }
+    public string? StudyDescription { get; }
     /// <summary>
     /// The Accession Number for this Study, usually used to associate the study with clinical data in the RIS
     /// </summary>
@@ -73,7 +73,7 @@ public class Study : IEnumerable<Series>
         var imageCount = 2;
 
         //if we know about the frequency of StudyDescription values for this modality?
-        if(stats.TagValuesByModalityAndTag.TryGetValue(modalityStats.Modality, out var descriptions))
+        if (stats.TagValuesByModalityAndTag.TryGetValue(modalityStats.Modality, out var descriptions))
             StudyDescription = DicomDataGeneratorStats.GetRandomStudyDescription(modalityStats.Modality, r);
 
         AccessionNumber = DicomDataGeneratorStats.GetRandomAccessionNumber(r);
@@ -84,21 +84,21 @@ public class Study : IEnumerable<Series>
         //have a random number of series (based on average and standard deviation for that modality)
         //but have at least 1 series!
 
-        if(modalityStats.Modality == "CT")
+        if (modalityStats.Modality == "CT")
         {
             // Set ImageType
             imageType = DicomDataGeneratorStats.Instance.GetRandomImageType(r);
-            if(imageType == "ORIGINAL\\PRIMARY\\AXIAL")
+            if (imageType == "ORIGINAL\\PRIMARY\\AXIAL")
             {
-                seriesCount = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
-                imageCount = Math.Max(1,(int)modalityStats.ImagesPerSeriesNormal.Sample());
+                seriesCount = Math.Max(1, (int)modalityStats.SeriesPerStudyNormal.Sample());
+                imageCount = Math.Max(1, (int)modalityStats.ImagesPerSeriesNormal.Sample());
             }
         }
         else
         {
             imageType = "ORIGINAL\\PRIMARY";
-            seriesCount = Math.Max(1,(int)modalityStats.SeriesPerStudyNormal.Sample());
-            imageCount = Math.Max(1,(int)modalityStats.ImagesPerSeriesNormal.Sample());
+            seriesCount = Math.Max(1, (int)modalityStats.SeriesPerStudyNormal.Sample());
+            imageCount = Math.Max(1, (int)modalityStats.ImagesPerSeriesNormal.Sample());
         }
 
         // see if we have a better StudyDescription / SeriesDescription / BodyPart value set for
@@ -113,8 +113,8 @@ public class Study : IEnumerable<Series>
 
         // Pre-size series list with series count (not image count)
         _series = new List<Series>(seriesCount);
-        for (var i=0;i<seriesCount;i++)
-            _series.Add(new Series(this, person, modalityStats.Modality, imageType, imageCount,part));
+        for (var i = 0; i < seriesCount; i++)
+            _series.Add(new Series(this, person, modalityStats.Modality, imageType, imageCount, part));
 
         // Calculate total instance count across all series
         NumberOfStudyRelatedInstances = _series.Sum(s => s.NumberOfSeriesRelatedInstances);
