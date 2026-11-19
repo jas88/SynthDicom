@@ -149,7 +149,7 @@ public class DicomDataGenerator : DataGenerator, IDisposable
     /// </summary>
     public const string ImageCsvFilename = "image.csv";
 
-    private bool csvInitialized;
+    private bool _csvInitialized;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DicomDataGenerator"/> class for generating synthetic DICOM images.
@@ -191,7 +191,7 @@ public class DicomDataGenerator : DataGenerator, IDisposable
     {
         ArgumentNullException.ThrowIfNull(person);
 
-        if (!csvInitialized && Csv)
+        if (!_csvInitialized && Csv)
             InitialiseCSVOutput();
 
         //The currently extracting study
@@ -460,9 +460,9 @@ public class DicomDataGenerator : DataGenerator, IDisposable
     private void InitialiseCSVOutput()
     {
         // Write the headers
-        if (csvInitialized)
+        if (_csvInitialized)
             return;
-        csvInitialized = true;
+        _csvInitialized = true;
 
         if (OutputDir == null)
             return;
