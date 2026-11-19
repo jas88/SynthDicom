@@ -138,4 +138,3 @@ The following tags are populated in dicom files generated:
 
 # Pixel Data
 Currently pixel data is written as a black square with the SOP Instance UID written in white.
-
