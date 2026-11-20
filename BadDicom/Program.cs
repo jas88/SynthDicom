@@ -231,16 +231,8 @@ internal sealed class Program
 
         //setting up bulk inserters
         var tables = new DiscoveredTable[template.Tables.Count];
-        var batches = new DataTable[batchSize][];
-
-        for (var i = 0; i < batches.Length; i++)
-            batches[i] = new DataTable[template.Tables.Count];
-
-        var uploaders = new IBulkCopy[batchSize][];
-
-        for (var i = 0; i < uploaders.Length; i++)
-            uploaders[i] = new IBulkCopy[template.Tables.Count];
-
+        var batches = PerBatch<DataTable>(batchSize, template.Tables.Count);
+        var uploaders = PerBatch<IBulkCopy>(batchSize, template.Tables.Count);
         var pks = new string?[template.Tables.Count];
 
         for (var i = 0; i < template.Tables.Count; i++)
@@ -314,6 +306,35 @@ internal sealed class Program
 
         swTotal.Stop();
 
+        MakeTablesDistinct(tables, pks);
+
+        Console.WriteLine("Final Row Counts:");
+
+        foreach (var t in tables)
+            Console.WriteLine($"{t.GetFullyQualifiedName()}: {t.GetRowCount():0,0}");
+
+        Console.WriteLine($"Total Running Time:{swTotal.Elapsed}");
+        return 0;
+    }
+
+    /// <summary>
+    /// Returns an array of <paramref name="tableCount"/> elements for each of the <paramref name="batchSize"/> batches
+    /// </summary>
+    private static T[][] PerBatch<T>(int batchSize, int tableCount)
+    {
+        var perBatch = new T[batchSize][];
+
+        for (var i = 0; i < perBatch.Length; i++)
+            perBatch[i] = new T[tableCount];
+
+        return perBatch;
+    }
+
+    /// <summary>
+    /// Deduplicates each table that has a column in <paramref name="pks"/>, then makes that column its primary key
+    /// </summary>
+    private static void MakeTablesDistinct(DiscoveredTable[] tables, string?[] pks)
+    {
         for (var i = 0; i < tables.Length; i++)
         {
             var pk = pks[i];
@@ -333,14 +354,6 @@ internal sealed class Program
             }
             tbl.CreatePrimaryKey(500000000, pkColumn);
         }
-
-        Console.WriteLine("Final Row Counts:");
-
-        foreach (var t in tables)
-            Console.WriteLine($"{t.GetFullyQualifiedName()}: {t.GetRowCount():0,0}");
-
-        Console.WriteLine($"Total Running Time:{swTotal.Elapsed}");
-        return 0;
     }
 
     private static void RunBatch(PersonCollection identifiers, ProgramOptions opts, Random r, DataTable[] batches, IBulkCopy[] uploaders)
