@@ -56,4 +56,28 @@ internal sealed class StudyTests
             Assert.That(image1.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID).UID, Is.EqualTo("777"));
         });
     }
+
+    /// <summary>
+    /// Pins the StudyDescription that a seeded Random picks. Each modality's descriptions are weighted by cumulative
+    /// frequency in list order, so these change if that order does. The seeds are ones where the earlier row order of
+    /// DicomDataGeneratorTags.csv, or sorting tied frequencies alphabetically (CR 21, XA 96), picks another description.
+    /// </summary>
+    [TestCase("CR", 0, "XR Pelvis")]
+    [TestCase("CR", 21, "XR Neck soft tissue")]
+    [TestCase("MR", 0, "NINEWELLS^Lumbar Spine")]
+    [TestCase("SR", 0, "XR Abdomen")]
+    [TestCase("US", 0, "US Kidney Both")]
+    [TestCase("XA", 96, "Cateterismo y Angiocardiografía Izquierdos")]
+    public void Test_SeededStudy_PicksPinnedStudyDescription(string modality, int seed, string expected)
+    {
+        var r = new Random(seed);
+
+        using var generator = new DicomDataGenerator(r, null) { NoPixels = true };
+
+        var p = new Person(r);
+
+        Study study = new(generator, p, new ModalityStats(modality, 1, 0, 1, 0, r), r);
+
+        Assert.That(study.StudyDescription, Is.EqualTo(expected));
+    }
 }
