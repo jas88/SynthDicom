@@ -196,16 +196,23 @@ internal sealed class Program
         var swTotal = Stopwatch.StartNew();
         const string neverDistinct = "SOPInstanceUID";
 
-        if (!File.Exists(configDatabase.Template))
+        if (string.IsNullOrWhiteSpace(configDatabase.Template))
         {
             Console.WriteLine($"Listed template file '{configDatabase.Template}' does not exist");
             return -1;
         }
 
+        // Read the file rather than asking File.Exists first: File.Exists also returns false for a file the
+        // caller isn't allowed to read, which would then be reported as missing
         ImageTableTemplateCollection? template;
         try
         {
             template = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(configDatabase.Template));
+        }
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
+        {
+            Console.WriteLine($"Listed template file '{configDatabase.Template}' does not exist");
+            return -1;
         }
         // The file can't be read, or isn't valid YAML for a template (YamlDotNet wraps every other
         // deserialization failure in a YamlException)

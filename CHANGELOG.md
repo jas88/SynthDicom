@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BadDicom reports a table template that is empty, holds only comments or has no `Tables` as a template error, and exits with -2 before it connects to the database. It failed later with a `NullReferenceException`, and exit code 3, once it had connected
 - BadDicom no longer silently skips a UID list file it isn't allowed to read. It checked for the file with `File.Exists`, which also returns false for a file the caller can't read. It now reads the file, reports any failure other than a missing file, and exits with -1. A UID list file that doesn't exist is still skipped, as documented
 - BadDicom no longer silently runs without its configuration when it isn't allowed to read `BadDicom.yaml`, which `File.Exists` reported as missing. It now reads the file, reports the error and exits with -1. Only a `BadDicom.yaml` that doesn't exist means no configuration
+- BadDicom reports a table template it isn't allowed to read as a read error, with exit code -2, instead of saying the file doesn't exist, with exit code -1. That came from the same `File.Exists` check
 
 
 ## [2.0.1] - 2026-11-16
