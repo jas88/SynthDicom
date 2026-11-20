@@ -36,10 +36,12 @@ public class ModalitiesGenerator : IIncrementalGenerator
         if (rows.Count == 0)
             return;
 
+        // Keep the CSV's row order: the frequencies become cumulative weights in this order, so the order
+        // decides which modality a seeded Random picks
         var validRows = rows
             .Where(r => r.ContainsKey("Modality") && r.ContainsKey("Frequency"))
             .Where(r => !string.IsNullOrWhiteSpace(r["Modality"]))
-            .OrderBy(r => r["Modality"]);
+            .ToList();
 
         var sb = new StringBuilder();
         sb.AppendLine("namespace SynthDicom;");
@@ -51,7 +53,7 @@ public class ModalitiesGenerator : IIncrementalGenerator
         sb.AppendLine("internal static partial class GeneratedModalities");
         sb.AppendLine("{");
 
-        // Generate BucketList of modalities by frequency
+        // Generate BucketList of modalities by frequency, in CSV order
         sb.AppendLine("    internal static readonly BucketList<string> ModalityFrequencies = new()");
         sb.AppendLine("    {");
 
