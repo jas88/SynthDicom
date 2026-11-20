@@ -112,13 +112,14 @@ public class Study : IEnumerable<Series>
             StudyDescription = part?.StudyDescription;
         }
 
+        // Every series gets imageCount images. Set the study's total first: each series makes its images when it
+        // is created, and every image records NumberOfStudyRelatedInstances
+        NumberOfStudyRelatedInstances = seriesCount * imageCount;
+
         // Pre-size series list with series count (not image count)
         _series = new List<Series>(seriesCount);
         for (var i = 0; i < seriesCount; i++)
             _series.Add(new Series(this, person, modalityStats.Modality, imageType, imageCount, part));
-
-        // Calculate total instance count across all series
-        NumberOfStudyRelatedInstances = _series.Sum(s => s.NumberOfSeriesRelatedInstances);
     }
 
     /// <summary>

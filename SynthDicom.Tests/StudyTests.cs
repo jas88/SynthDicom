@@ -80,4 +80,27 @@ internal sealed class StudyTests
 
         Assert.That(study.StudyDescription, Is.EqualTo(expected));
     }
+
+    [Test]
+    public void Test_EveryImage_CarriesTheStudyInstanceCount()
+    {
+        var r = new Random(100);
+
+        using var generator = new DicomDataGenerator(r, null, "CT") { NoPixels = true };
+
+        var p = new Person(r);
+
+        Study study = new(generator, p, new ModalityStats("MR", 2, 0, 50, 0, r), r);
+        var images = generator.GenerateStudyImages(p, out var ctStudy);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(study.NumberOfStudyRelatedInstances, Is.EqualTo(100));
+            Assert.That(study.Series.SelectMany(static s => s.Datasets).Select(InstanceCount), Is.All.EqualTo(100));
+            Assert.That(ctStudy.NumberOfStudyRelatedInstances, Is.EqualTo(images.Length));
+            Assert.That(images.Select(InstanceCount), Is.All.EqualTo(images.Length));
+        });
+    }
+
+    private static int InstanceCount(DicomDataset ds) => ds.GetSingleValue<int>(DicomTag.NumberOfStudyRelatedInstances);
 }

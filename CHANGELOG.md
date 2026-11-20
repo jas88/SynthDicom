@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Seeded runs now repeat their image counts. `Study` drew the number of series and images from the `Random` held by its `ModalityStats`, and the built-in modalities held an unseeded one, so with the same seed every modality except CT got different numbers of images in each run, despite the 2.0.0 note that seeded runs are reproducible. `Study` now draws the counts from the `Random` it is given, and makes no draw when a standard deviation is 0 (every series count, and CT's image count); the `Random` given to `ModalityStats` is no longer used. **Seeded output**: CT is unchanged, and a single study of another modality only gets new, now repeatable, image counts, but in a run of several studies from one `Random`, as in BadDicom, the studies after the first non-CT one differ entirely. A `Study` made with your own `ModalityStats` sharing its `Random` also gets new image counts, and for CT new descriptions
+- Every image now records its study's `NumberOfStudyRelatedInstances`. Images made through `Study`, and so by `DicomDataGenerator` and BadDicom (including the study CSV), always had 0, because each series made its images before the study set its count
 
 
 ## [2.0.1] - 2026-11-16
