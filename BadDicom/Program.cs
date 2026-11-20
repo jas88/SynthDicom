@@ -193,7 +193,7 @@ internal sealed class Program
             return -1;
         }
 
-        ImageTableTemplateCollection template;
+        ImageTableTemplateCollection? template;
         try
         {
             template = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(configDatabase.Template));
@@ -203,6 +203,14 @@ internal sealed class Program
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
         {
             Console.WriteLine($"Error reading yaml from '{configDatabase.Template}'{Environment.NewLine}{e}");
+            return -2;
+        }
+
+        // A template that is empty, or holds only comments, deserializes to null, and one with an empty Tables
+        // entry has a null table list
+        if (template?.Tables == null)
+        {
+            Console.WriteLine($"Error reading yaml from '{configDatabase.Template}'{Environment.NewLine}The file is empty, holds only comments or has no Tables, so it lists no tables");
             return -2;
         }
 
