@@ -64,7 +64,22 @@ internal sealed class ModalityFrequencyTests
     /// Every modality's series count has a standard deviation of 0, so it is exactly the mean. Image counts are only
     /// fixed where their standard deviation is 0 (CT), so other modalities leave them unpinned (null).
     /// </summary>
-    [TestCaseSource(nameof(CountCases))]
+    [TestCase("CT", 2, 100)]
+    [TestCase("MR", 1, null)]
+    [TestCase("US", 1, null)]
+    [TestCase("PT", 1, null)]
+    [TestCase("CR", 1, null)]
+    [TestCase("XA", 1, null)]
+    [TestCase("RF", 1, null)]
+    [TestCase("DX", 1, null)]
+    [TestCase("OT", 1, null)]
+    [TestCase("MG", 1, null)]
+    [TestCase("IO", 1, null)]
+    [TestCase("NM", 1, null)]
+    [TestCase("PR", 1, null)]
+    [TestCase("PX", 1, null)]
+    [TestCase("SC", 1, null)]
+    [TestCase("KO", 1, null)]
     public void Test_SeededStudy_HasPinnedSeriesAndImageCounts(string modality, int series, int? imagesPerSeries)
     {
         var r = new Random(7);
@@ -77,7 +92,4 @@ internal sealed class ModalityFrequencyTests
         if (imagesPerSeries != null)
             Assert.That(study.Series.Select(static s => s.Datasets.Count), Is.All.EqualTo(imagesPerSeries));
     }
-
-    private static IEnumerable<TestCaseData> CountCases() =>
-        ExpectedTable.Select(static t => new TestCaseData(t.Modality, (int)t.SeriesMean, t.ImagesSd == 0 ? (int?)t.ImagesMean : null));
 }
