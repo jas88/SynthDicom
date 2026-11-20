@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Used by 'dotnet test' for this project. Coverage is only collected when a test run asks for the "XPlat Code Coverage" collector, as CI does. -->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage" enabled="false">
+        <Configuration>
+          <!-- The tests reference BadDicom to test its configuration classes, but coverage measures the SynthDicom library alone -->
+          <Exclude>[BadDicom]*</Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

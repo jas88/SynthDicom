@@ -58,11 +58,8 @@ public sealed class ExplicitUIDs
         // called and reads it while it is enumerated, so the try covers the whole loop.
         try
         {
-            foreach (var line in File.ReadLines(path))
-            {
-                if (!string.IsNullOrWhiteSpace(line))
-                    queue.Enqueue(line);
-            }
+            foreach (var line in File.ReadLines(path).Where(static l => !string.IsNullOrWhiteSpace(l)))
+                queue.Enqueue(line);
         }
         catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
         {
