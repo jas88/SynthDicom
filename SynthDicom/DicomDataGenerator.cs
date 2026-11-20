@@ -111,13 +111,21 @@ public partial class DicomDataGenerator : DataGenerator, IDisposable
         //The currently extracting study
         string? studyUID = null;
 
-        foreach (var ds in GenerateStudyImages(person, out var study))
+        var images = GenerateStudyImages(person, out var study);
+
+        // If MaximumImages cuts this study short, its images record how many of them are written
+        var written = Math.Clamp(MaximumImages, 0, images.Length);
+
+        foreach (var ds in images)
         {
             //don't generate more than the maximum number of images
             if (MaximumImages-- <= 0)
             {
                 break;
             }
+
+            if (written < images.Length && ds.Contains(DicomTag.NumberOfStudyRelatedInstances))
+                ds.AddOrUpdate(DicomTag.NumberOfStudyRelatedInstances, written);
 
             studyUID = study.StudyUID.UID; //all images will have the same study
 
