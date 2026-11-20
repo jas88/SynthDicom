@@ -1,4 +1,4 @@
-﻿namespace SynthDicom;
+namespace SynthDicom;
 
 /// <summary>
 /// How and whether to group the generated files into subdirectories

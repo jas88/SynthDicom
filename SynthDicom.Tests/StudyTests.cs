@@ -1,4 +1,4 @@
-﻿namespace SynthDicom.Tests;
+namespace SynthDicom.Tests;
 
 internal sealed class StudyTests
 {
@@ -7,17 +7,17 @@ internal sealed class StudyTests
     {
         var r = new Random(100);
 
-        using var generator = new DicomDataGenerator(r,null) {NoPixels = true};
+        using var generator = new DicomDataGenerator(r, null) { NoPixels = true };
 
         var p = new Person(r);
 
-        Study study = new(generator,p,new ModalityStats("MR",2,0,50,0,r),r);
+        Study study = new(generator, p, new ModalityStats("MR", 2, 0, 50, 0, r), r);
 
         Assert.That(study.Series, Has.Count.EqualTo(2));
         Assert.That(study.Series[0].Datasets, Has.Count.EqualTo(50));
 
 
-        foreach(var ds in study.Series[0])
+        foreach (var ds in study.Series[0])
         {
             Assert.Multiple(() =>
             {
@@ -36,7 +36,7 @@ internal sealed class StudyTests
 
         var r = new Random(100);
 
-        using var generator = new DicomDataGenerator(r, null) {NoPixels = true};
+        using var generator = new DicomDataGenerator(r, null) { NoPixels = true };
 
         var p = new Person(r);
 

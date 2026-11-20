@@ -33,7 +33,8 @@ internal static class CsvHelper
         for (int i = 1; i < lines.Count; i++)
         {
             var values = ParseCsvLine(lines[i]);
-            if (values.Count == 0) continue;
+            if (values.Count == 0)
+                continue;
 
             var row = new Dictionary<string, string>();
             for (int j = 0; j < Math.Min(headers.Count, values.Count); j++)

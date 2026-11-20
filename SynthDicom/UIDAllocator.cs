@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
 namespace SynthDicom;
 
@@ -11,7 +11,7 @@ public class UIDAllocator
     /// <summary>
     /// Explicit <see cref="DicomUID"/> string values to use when allocating uids for studies
     /// </summary>
-    public static readonly ConcurrentQueue<string> StudyUIDs = new ();
+    public static readonly ConcurrentQueue<string> StudyUIDs = new();
 
 
     /// <summary>
