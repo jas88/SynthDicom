@@ -144,11 +144,20 @@ internal sealed class Normal : IContinuousDistribution
     /// <returns>a sample from the distribution.</returns>
     public double Sample() => SampleUnchecked(_random, _mean, _stdDev);
 
+    /// <summary>
+    /// Generates a sample from the normal distribution using the <i>Box-Muller</i> algorithm, drawing from
+    /// <paramref name="rnd"/> instead of <see cref="RandomSource"/>.
+    /// </summary>
+    /// <param name="rnd">The random number generator to draw from.</param>
+    /// <returns>a sample from the distribution.</returns>
+    public double Sample(Random rnd) => SampleUnchecked(rnd, _mean, _stdDev);
+
     internal static double SampleUnchecked(Random rnd, double mean, double stddev)
     {
         double x;
         while (!PolarTransform(rnd.NextDouble(), rnd.NextDouble(), out x, out _))
         {
+            // Rejection sampling: the pair fell outside the unit circle or on its centre, so draw another
         }
 
         return mean + (stddev * x);
@@ -159,7 +168,8 @@ internal sealed class Normal : IContinuousDistribution
         var v1 = (2.0 * a) - 1.0;
         var v2 = (2.0 * b) - 1.0;
         var r = (v1 * v1) + (v2 * v2);
-        if (r >= 1.0 || r == 0.0)
+        // r is a sum of squares, so it is never negative: r <= 0 only when r is exactly 0.
+        if (r >= 1.0 || r <= 0.0)
         {
             x = 0;
             y = 0;
