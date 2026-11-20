@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.IO;
 using YamlDotNet.Serialization;
 
@@ -38,31 +39,34 @@ public sealed class ExplicitUIDs
         UIDAllocator.SeriesUIDs.Clear();
         UIDAllocator.SOPUIDs.Clear();
 
-        foreach (var u in GetUIDsFrom(StudyInstanceUIDs))
-            UIDAllocator.StudyUIDs.Enqueue(u);
-
-        foreach (var u in GetUIDsFrom(SeriesInstanceUIDs))
-            UIDAllocator.SeriesUIDs.Enqueue(u);
-
-        foreach (var u in GetUIDsFrom(SOPInstanceUIDs))
-            UIDAllocator.SOPUIDs.Enqueue(u);
+        EnqueueUIDsFrom(StudyInstanceUIDs, UIDAllocator.StudyUIDs);
+        EnqueueUIDsFrom(SeriesInstanceUIDs, UIDAllocator.SeriesUIDs);
+        EnqueueUIDsFrom(SOPInstanceUIDs, UIDAllocator.SOPUIDs);
     }
 
-    private static IEnumerable<string> GetUIDsFrom(string? path)
+    /// <summary>
+    /// Queues the UIDs in the file at <paramref name="path"/>, one per non-blank line, reading the file as a stream
+    /// rather than holding all of it in memory as well as in the queue.
+    /// </summary>
+    private static void EnqueueUIDsFrom(string? path, ConcurrentQueue<string> queue)
     {
         if (string.IsNullOrWhiteSpace(path))
-            return [];
+            return;
 
         // Read the file rather than asking File.Exists first: File.Exists also returns false for a file the
-        // caller isn't allowed to read, which would skip it silently. Reading it all now raises any failure here.
+        // caller isn't allowed to read, which would skip it silently. File.ReadLines opens the file when it is
+        // called and reads it while it is enumerated, so the try covers the whole loop.
         try
         {
-            return File.ReadAllLines(path).Where(static l => !string.IsNullOrWhiteSpace(l));
+            foreach (var line in File.ReadLines(path))
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                    queue.Enqueue(line);
+            }
         }
-        // A UID file that doesn't exist is skipped, as documented; any other failure goes to the caller
         catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
         {
-            return [];
+            // A UID file that doesn't exist is skipped, as documented; any other failure goes to the caller
         }
     }
 }
