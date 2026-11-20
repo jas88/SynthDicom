@@ -51,24 +51,33 @@ internal sealed class Program
             opts.NumberOfStudies = 2000;
 
 
-        if (File.Exists(ConfigFile))
+        Config? config = null;
+        var configured = true;
+
+        // Read the file rather than asking File.Exists first: File.Exists also returns false for a file the
+        // caller isn't allowed to read, which would silently run without the configuration
+        try
         {
-            Config? config;
+            var yaml = File.ReadAllText(ConfigFile);
+            var d = new StaticDeserializerBuilder(new ConfigContext()).Build();
+            config = d.Deserialize<Config>(yaml);
+        }
+        // Only a missing file means there is no configuration
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
+        {
+            configured = false;
+        }
+        // The file can't be read, or isn't valid YAML for Config (YamlDotNet wraps every other
+        // deserialization failure in a YamlException)
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
+        {
+            Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}{e}");
+            _returnCode = -1;
+            return;
+        }
 
-            try
-            {
-                var d = new StaticDeserializerBuilder(new ConfigContext()).Build();
-                config = d.Deserialize<Config>(File.ReadAllText(ConfigFile));
-            }
-            // The file can't be read, or isn't valid YAML for Config (YamlDotNet wraps every other
-            // deserialization failure in a YamlException)
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
-            {
-                Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}{e}");
-                _returnCode = -1;
-                return;
-            }
-
+        if (configured)
+        {
             // A file that is empty, or holds only comments, deserializes to null
             if (config == null)
             {
