@@ -214,6 +214,13 @@ internal sealed class Program
             Console.WriteLine($"Listed template file '{configDatabase.Template}' does not exist");
             return -1;
         }
+        // A path that can't name a file, such as one with a NUL character or one too long for the file system.
+        // File.Exists answered false for these, so they keep the missing template's exit code.
+        catch (Exception e) when (e is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            Console.WriteLine($"Listed template file '{configDatabase.Template}' is not a valid file path{Environment.NewLine}{e.Message}");
+            return -1;
+        }
         // The file can't be read, or isn't valid YAML for a template (YamlDotNet wraps every other
         // deserialization failure in a YamlException)
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
