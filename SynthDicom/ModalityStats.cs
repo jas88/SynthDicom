@@ -10,7 +10,8 @@ namespace SynthDicom;
 /// <param name="standardDeviationSeriesPerStudy">The standard deviation of the number of Series in a Study of this Modality</param>
 /// <param name="averageImagesPerSeries">The mean number of Images in a Series of this Modality</param>
 /// <param name="standardDeviationImagesPerSeries">The standard deviation of the number of Images in a Series of this Modality</param>
-/// <param name="random">The Random pseudo-random number generator to be used</param>
+/// <param name="random">Kept for compatibility. <see cref="Study"/> draws the series and image counts from the Random it is
+/// given, so that the same seed gives the same counts, not from this one</param>
 public readonly record struct ModalityStats(
     string modalityCode,
     double averageSeriesPerStudy,
@@ -55,7 +56,7 @@ public readonly record struct ModalityStats(
     internal Normal ImagesPerSeriesNormal { get; } = new Normal(averageImagesPerSeries, standardDeviationImagesPerSeries, random);
 
     /// <summary>
-    /// The Random pseudo-random number generator to be used
+    /// The Random passed to the constructor; <see cref="Study"/> does not draw from it
     /// </summary>
     private Random Rng { get; } = random;
 }

@@ -144,6 +144,14 @@ internal sealed class Normal : IContinuousDistribution
     /// <returns>a sample from the distribution.</returns>
     public double Sample() => SampleUnchecked(_random, _mean, _stdDev);
 
+    /// <summary>
+    /// Generates a sample from the normal distribution using the <i>Box-Muller</i> algorithm, drawing from
+    /// <paramref name="rnd"/> instead of <see cref="RandomSource"/>.
+    /// </summary>
+    /// <param name="rnd">The random number generator to draw from.</param>
+    /// <returns>a sample from the distribution.</returns>
+    public double Sample(Random rnd) => SampleUnchecked(rnd, _mean, _stdDev);
+
     internal static double SampleUnchecked(Random rnd, double mean, double stddev)
     {
         double x;

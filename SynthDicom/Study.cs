@@ -1,4 +1,5 @@
 using System.Collections;
+using SynthDicom.Statistics.Distributions;
 
 namespace SynthDicom;
 
@@ -82,7 +83,7 @@ public class Study : IEnumerable<Series>
         /////////////////////  Generate all the Series (will also generate images) /////////////////////
 
         //have a random number of series (based on average and standard deviation for that modality)
-        //but have at least 1 series!
+        //but have at least 1 series! The counts come from r, so the same seed gives the same counts
 
         if (modalityStats.Modality == "CT")
         {
@@ -90,15 +91,15 @@ public class Study : IEnumerable<Series>
             imageType = DicomDataGeneratorStats.Instance.GetRandomImageType(r);
             if (imageType == "ORIGINAL\\PRIMARY\\AXIAL")
             {
-                seriesCount = Math.Max(1, (int)modalityStats.SeriesPerStudyNormal.Sample());
-                imageCount = Math.Max(1, (int)modalityStats.ImagesPerSeriesNormal.Sample());
+                seriesCount = Math.Max(1, SampleCount(modalityStats.SeriesPerStudyNormal, r));
+                imageCount = Math.Max(1, SampleCount(modalityStats.ImagesPerSeriesNormal, r));
             }
         }
         else
         {
             imageType = "ORIGINAL\\PRIMARY";
-            seriesCount = Math.Max(1, (int)modalityStats.SeriesPerStudyNormal.Sample());
-            imageCount = Math.Max(1, (int)modalityStats.ImagesPerSeriesNormal.Sample());
+            seriesCount = Math.Max(1, SampleCount(modalityStats.SeriesPerStudyNormal, r));
+            imageCount = Math.Max(1, SampleCount(modalityStats.ImagesPerSeriesNormal, r));
         }
 
         // see if we have a better StudyDescription / SeriesDescription / BodyPart value set for
@@ -119,6 +120,14 @@ public class Study : IEnumerable<Series>
         // Calculate total instance count across all series
         NumberOfStudyRelatedInstances = _series.Sum(s => s.NumberOfSeriesRelatedInstances);
     }
+
+    /// <summary>
+    /// Draws a series or image count from <paramref name="r"/>, the Random this study is generated with. A distribution
+    /// with a standard deviation of 0 always gives its mean, so it takes no draw and leaves <paramref name="r"/> as it was.
+    /// </summary>
+    // Normal rejects a negative standard deviation, so StdDev <= 0 means it is exactly 0: a fixed count
+    private static int SampleCount(Normal distribution, Random r) =>
+        (int)(distribution.StdDev <= 0 ? distribution.Mean : distribution.Sample(r));
 
     /// <summary>
     /// Returns enumeration of <see cref="Series"/>

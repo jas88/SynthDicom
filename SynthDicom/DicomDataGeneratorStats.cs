@@ -19,7 +19,11 @@ internal sealed class DicomDataGeneratorStats
     /// </summary>
     public readonly Dictionary<string, (int MaxWeight, (int CumulativeWeight, string Value)[] Items)> TagValuesByModalityAndTag = InitializeTagValuesByModalityAndTag();
 
-    public readonly (int MaxWeight, (int CumulativeWeight, ModalityStats Value)[] Items) ModalityFrequency = InitializeModalityFrequency(new Random());
+    /// <summary>
+    /// The modalities by frequency, with their series and image distributions. Study draws its counts from the Random
+    /// it is given, never from the one these ModalityStats hold, so that one need not be seeded.
+    /// </summary>
+    public readonly (int MaxWeight, (int CumulativeWeight, ModalityStats Value)[] Items) ModalityFrequency = InitializeModalityFrequency(Random.Shared);
 
     public readonly ReadOnlyDictionary<string, (int MaxWeight, (int CumulativeWeight, DescBodyPart Value)[] Items)> DescBodyPartsByModality = DescBodyPart.d;
 
