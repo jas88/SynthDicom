@@ -15,6 +15,7 @@ using FAnsi.Implementations.MySql;
 using FAnsi.Implementations.Oracle;
 using FAnsi.Implementations.PostgreSql;
 using YamlDotNet.Serialization;
+using YamlException = YamlDotNet.Core.YamlException;
 
 namespace BadDicom;
 
@@ -50,23 +51,53 @@ internal sealed class Program
             opts.NumberOfStudies = 2000;
 
 
-        if (File.Exists(ConfigFile))
-        {
-            Config config;
+        Config? config = null;
+        var configured = true;
 
-            try
+        // Read the file rather than asking File.Exists first: File.Exists also returns false for a file the
+        // caller isn't allowed to read, which would silently run without the configuration
+        try
+        {
+            var yaml = File.ReadAllText(ConfigFile);
+            var d = new StaticDeserializerBuilder(new ConfigContext()).Build();
+            config = d.Deserialize<Config>(yaml);
+        }
+        // Only a missing file means there is no configuration
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
+        {
+            configured = false;
+        }
+        // The file can't be read, or isn't valid YAML for Config (YamlDotNet wraps every other
+        // deserialization failure in a YamlException)
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
+        {
+            Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}{e}");
+            _returnCode = -1;
+            return;
+        }
+
+        if (configured)
+        {
+            // A file that is empty, or holds only comments, deserializes to null
+            if (config == null)
             {
-                var d = new StaticDeserializerBuilder(new ConfigContext()).Build();
-                config = d.Deserialize<Config>(File.ReadAllText(ConfigFile));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}{e}");
+                Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}The file is empty or holds only comments, so it has no configuration");
                 _returnCode = -1;
                 return;
             }
 
-            config.UIDs?.Load();
+            try
+            {
+                config.UIDs?.Load();
+            }
+            // A UID list file named in the configuration exists but can't be read, or its path can't name a file,
+            // such as one with a NUL character (ArgumentException) or one too long (PathTooLongException, an IOException)
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+            {
+                Console.WriteLine($"Error reading the UID lists named in '{ConfigFile}'{Environment.NewLine}{e}");
+                _returnCode = -1;
+                return;
+            }
 
             if (config.Database != null)
             {
@@ -166,20 +197,44 @@ internal sealed class Program
         var swTotal = Stopwatch.StartNew();
         const string neverDistinct = "SOPInstanceUID";
 
-        if (!File.Exists(configDatabase.Template))
+        if (string.IsNullOrWhiteSpace(configDatabase.Template))
         {
             Console.WriteLine($"Listed template file '{configDatabase.Template}' does not exist");
             return -1;
         }
 
-        ImageTableTemplateCollection template;
+        // Read the file rather than asking File.Exists first: File.Exists also returns false for a file the
+        // caller isn't allowed to read, which would then be reported as missing
+        ImageTableTemplateCollection? template;
         try
         {
             template = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(configDatabase.Template));
         }
-        catch (Exception e)
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
+        {
+            Console.WriteLine($"Listed template file '{configDatabase.Template}' does not exist");
+            return -1;
+        }
+        // A path that can't name a file, such as one with a NUL character or one too long for the file system.
+        // File.Exists answered false for these, so they keep the missing template's exit code.
+        catch (Exception e) when (e is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            Console.WriteLine($"Listed template file '{configDatabase.Template}' is not a valid file path{Environment.NewLine}{e.Message}");
+            return -1;
+        }
+        // The file can't be read, or isn't valid YAML for a template (YamlDotNet wraps every other
+        // deserialization failure in a YamlException)
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
         {
             Console.WriteLine($"Error reading yaml from '{configDatabase.Template}'{Environment.NewLine}{e}");
+            return -2;
+        }
+
+        // A template that is empty, or holds only comments, deserializes to null, and one with an empty Tables
+        // entry has a null table list
+        if (template?.Tables == null)
+        {
+            Console.WriteLine($"Error reading yaml from '{configDatabase.Template}'{Environment.NewLine}The file is empty, holds only comments or has no Tables, so it lists no tables");
             return -2;
         }
 
@@ -226,16 +281,8 @@ internal sealed class Program
 
         //setting up bulk inserters
         var tables = new DiscoveredTable[template.Tables.Count];
-        var batches = new DataTable[batchSize][];
-
-        for (var i = 0; i < batches.Length; i++)
-            batches[i] = new DataTable[template.Tables.Count];
-
-        var uploaders = new IBulkCopy[batchSize][];
-
-        for (var i = 0; i < uploaders.Length; i++)
-            uploaders[i] = new IBulkCopy[template.Tables.Count];
-
+        var batches = PerBatch<DataTable>(batchSize, template.Tables.Count);
+        var uploaders = PerBatch<IBulkCopy>(batchSize, template.Tables.Count);
         var pks = new string?[template.Tables.Count];
 
         for (var i = 0; i < template.Tables.Count; i++)
@@ -309,6 +356,35 @@ internal sealed class Program
 
         swTotal.Stop();
 
+        MakeTablesDistinct(tables, pks);
+
+        Console.WriteLine("Final Row Counts:");
+
+        foreach (var t in tables)
+            Console.WriteLine($"{t.GetFullyQualifiedName()}: {t.GetRowCount():0,0}");
+
+        Console.WriteLine($"Total Running Time:{swTotal.Elapsed}");
+        return 0;
+    }
+
+    /// <summary>
+    /// Returns an array of <paramref name="tableCount"/> elements for each of the <paramref name="batchSize"/> batches
+    /// </summary>
+    private static T[][] PerBatch<T>(int batchSize, int tableCount)
+    {
+        var perBatch = new T[batchSize][];
+
+        for (var i = 0; i < perBatch.Length; i++)
+            perBatch[i] = new T[tableCount];
+
+        return perBatch;
+    }
+
+    /// <summary>
+    /// Deduplicates each table that has a column in <paramref name="pks"/>, then makes that column its primary key
+    /// </summary>
+    private static void MakeTablesDistinct(DiscoveredTable[] tables, string?[] pks)
+    {
         for (var i = 0; i < tables.Length; i++)
         {
             var pk = pks[i];
@@ -328,14 +404,6 @@ internal sealed class Program
             }
             tbl.CreatePrimaryKey(500000000, pkColumn);
         }
-
-        Console.WriteLine("Final Row Counts:");
-
-        foreach (var t in tables)
-            Console.WriteLine($"{t.GetFullyQualifiedName()}: {t.GetRowCount():0,0}");
-
-        Console.WriteLine($"Total Running Time:{swTotal.Elapsed}");
-        return 0;
     }
 
     private static void RunBatch(PersonCollection identifiers, ProgramOptions opts, Random r, DataTable[] batches, IBulkCopy[] uploaders)
