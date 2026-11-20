@@ -15,6 +15,7 @@ using FAnsi.Implementations.MySql;
 using FAnsi.Implementations.Oracle;
 using FAnsi.Implementations.PostgreSql;
 using YamlDotNet.Serialization;
+using YamlException = YamlDotNet.Core.YamlException;
 
 namespace BadDicom;
 
@@ -59,7 +60,9 @@ internal sealed class Program
                 var d = new StaticDeserializerBuilder(new ConfigContext()).Build();
                 config = d.Deserialize<Config>(File.ReadAllText(ConfigFile));
             }
-            catch (Exception e)
+            // The file can't be read, or isn't valid YAML for Config (YamlDotNet wraps every other
+            // deserialization failure in a YamlException)
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
             {
                 Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}{e}");
                 _returnCode = -1;
@@ -177,7 +180,9 @@ internal sealed class Program
         {
             template = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(configDatabase.Template));
         }
-        catch (Exception e)
+        // The file can't be read, or isn't valid YAML for a template (YamlDotNet wraps every other
+        // deserialization failure in a YamlException)
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
         {
             Console.WriteLine($"Error reading yaml from '{configDatabase.Template}'{Environment.NewLine}{e}");
             return -2;
