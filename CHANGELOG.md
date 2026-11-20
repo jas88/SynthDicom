@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- BadDicom reports an empty `BadDicom.yaml`, or one that holds only comments, as a configuration error and exits with -1, like any other unusable `BadDicom.yaml`. It crashed with a `NullReferenceException`
+
+
 ## [2.0.1] - 2026-11-16
 
 ### Fixed

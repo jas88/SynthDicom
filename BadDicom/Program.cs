@@ -53,7 +53,7 @@ internal sealed class Program
 
         if (File.Exists(ConfigFile))
         {
-            Config config;
+            Config? config;
 
             try
             {
@@ -65,6 +65,14 @@ internal sealed class Program
             catch (Exception e) when (e is IOException or UnauthorizedAccessException or YamlException)
             {
                 Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}{e}");
+                _returnCode = -1;
+                return;
+            }
+
+            // A file that is empty, or holds only comments, deserializes to null
+            if (config == null)
+            {
+                Console.WriteLine($"Error deserializing '{ConfigFile}'{Environment.NewLine}The file is empty or holds only comments, so it has no configuration");
                 _returnCode = -1;
                 return;
             }
