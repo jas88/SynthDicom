@@ -410,7 +410,7 @@ CR,StudyDescription,XR Elbow Rt,1
 SR,StudyDescription,XR Elbow Rt,1
 CR,StudyDescription,XR Elbow Lt,19
 DX,StudyDescription,XR Facial bones,1
-XA,StudyDescription,Cateterismo y Angiocardiografía Izquierdos,11
+XA,StudyDescription,Cateterismo y AngiocardiografÃ­a Izquierdos,11
 SR,StudyDescription,l-spine^General,17
 CR,StudyDescription,XR Foot Rt,40
 DX,StudyDescription,XR Chest,305
@@ -448,7 +448,7 @@ US,StudyDescription,US Foot Rt,15
 SR,StudyDescription,XR Wrist Rt,10
 SR,StudyDescription,Barium swallow & meal,1
 CR,StudyDescription,XR Orbit foreign body demonstration Both,1
-SR,StudyDescription,Cateterismo y Angiocardiografía Izquierdos,1
+SR,StudyDescription,Cateterismo y AngiocardiografÃ­a Izquierdos,1
 RF,StudyDescription,Nasogastric feeding tube,1
 CR,StudyDescription,XR Scaphoid Lt,1
 US,StudyDescription,US Breast Lt,66
