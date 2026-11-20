@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING** (seeded output): for the same `-s` seed (or seeded `Random`), the tag values listed below differ from earlier versions, because of the fixes under Fixed. All other seeded tag values are unchanged, and seeded runs are now reproducible within this version for every modality. DICOM UIDs are still never affected by the seed
+  - Every study: `NumberOfStudyRelatedInstances` holds the study's number of images instead of 0. A run of only CT studies, as BadDicom makes by default, changes in nothing else unless `MaximumImages` cuts a study short
+  - A study that `MaximumImages` cuts short: `NumberOfStudyRelatedInstances` holds the number of images written, and the series it cuts short holds the number of its images written in `NumberOfSeriesRelatedInstances`
+  - A study of any built-in modality except CT: a new, now repeatable, number of images in each series, and so new `NumberOfSeriesRelatedInstances` and `NumberOfStudyRelatedInstances`. The first such study made from a `Random` changes in nothing else
+  - Every study after the first such study from the same `Random`, as in a BadDicom run: drawing that study's number of images moves the `Random` on, so these studies can also differ in their patient (`PatientID`, `PatientName`, `PatientBirthDate`, `PatientAddress` and `PatientAge`), `StudyDate`, `StudyTime`, `SeriesDate`, `SeriesTime`, `AcquisitionDate`, `AcquisitionTime`, `AccessionNumber` and `StudyDescription`. With more than one modality, they can also differ in `Modality`, `ModalitiesInStudy`, `ImageType` and numbers of series and images, and a CT study in `SeriesDescription` and `BodyPartExamined`
+  - A `Study` given your own `ModalityStats`: its numbers of series and images and, for CT, its `StudyDescription`, `SeriesDescription` and `BodyPartExamined` can change, and so can every study made after it from the same `Random`. None of these change if the `ModalityStats` holds the same `Random` as the `Study` and both its standard deviations are above 0, or holds another `Random` and both are 0
+
+### Fixed
+- Seeded runs now repeat their image counts. `Study` drew the number of series and images from the `Random` held by its `ModalityStats`, and the built-in modalities held an unseeded one, so with the same seed every modality except CT got different numbers of images in each run, despite the 2.0.0 note that seeded runs are reproducible. `Study` now draws the counts from the `Random` it is given, and makes no draw when a standard deviation is 0 (every series count, and CT's image count); the `Random` given to `ModalityStats` is no longer used
+- Every image now records its study's `NumberOfStudyRelatedInstances`. Images made through `Study`, and so by `DicomDataGenerator` and BadDicom (including the study CSV), always had 0, because each series made its images before the study set its count
+- A study cut short by `MaximumImages` now records the number of images actually written in `NumberOfStudyRelatedInstances`, and the series it cuts short records the number of its images written in `NumberOfSeriesRelatedInstances`, instead of the numbers generated
+
+
 ## [2.0.1] - 2026-11-16
 
 ### Fixed
