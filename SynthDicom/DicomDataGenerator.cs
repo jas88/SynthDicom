@@ -113,11 +113,15 @@ public partial class DicomDataGenerator : DataGenerator, IDisposable
 
         var images = GenerateStudyImages(person, out var study);
 
-        // If MaximumImages cuts this study short, its images record how many of them are written
+        // If MaximumImages cuts this study short, its images record how many of them are written, and so do the
+        // images of the series it cuts short: the one that holds the first image not written
         var written = Math.Clamp(MaximumImages, 0, images.Length);
+        var cutSeriesStart = written < images.Length ? StartOfSeriesHolding(study, written) : written;
 
-        foreach (var ds in images)
+        for (var i = 0; i < images.Length; i++)
         {
+            var ds = images[i];
+
             //don't generate more than the maximum number of images
             if (MaximumImages-- <= 0)
             {
@@ -126,6 +130,8 @@ public partial class DicomDataGenerator : DataGenerator, IDisposable
 
             if (written < images.Length && ds.Contains(DicomTag.NumberOfStudyRelatedInstances))
                 ds.AddOrUpdate(DicomTag.NumberOfStudyRelatedInstances, written);
+            if (i >= cutSeriesStart && ds.Contains(DicomTag.NumberOfSeriesRelatedInstances))
+                ds.AddOrUpdate(DicomTag.NumberOfSeriesRelatedInstances, written - cutSeriesStart);
 
             studyUID = study.StudyUID.UID; //all images will have the same study
 
@@ -155,6 +161,23 @@ public partial class DicomDataGenerator : DataGenerator, IDisposable
 
         //in the CSV write only the StudyUID (null if no images were generated)
         return [studyUID];
+    }
+
+    /// <summary>
+    /// Returns where the series that holds image <paramref name="index"/> of <paramref name="study"/> starts, counting the
+    /// study's images series by series, in order, as <see cref="GenerateStudyImages"/> returns them.
+    /// </summary>
+    private static int StartOfSeriesHolding(Study study, int index)
+    {
+        var start = 0;
+        foreach (var series in study.Series)
+        {
+            if (start + series.Datasets.Count > index)
+                return start;
+            start += series.Datasets.Count;
+        }
+
+        return start;
     }
 
     /// <summary>
