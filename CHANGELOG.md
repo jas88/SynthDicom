@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - BadDicom reports an empty `BadDicom.yaml`, or one that holds only comments, as a configuration error and exits with -1, like any other unusable `BadDicom.yaml`. It crashed with a `NullReferenceException`
+- BadDicom reports a UID list file named in `BadDicom.yaml` that it can't read, and exits with -1, like any other unusable `BadDicom.yaml`. It crashed with an `UnauthorizedAccessException`
 
 
 ## [2.0.1] - 2026-11-16

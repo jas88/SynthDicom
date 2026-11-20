@@ -77,7 +77,17 @@ internal sealed class Program
                 return;
             }
 
-            config.UIDs?.Load();
+            try
+            {
+                config.UIDs?.Load();
+            }
+            // A UID list file named in the configuration exists but can't be read
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                Console.WriteLine($"Error reading the UID lists named in '{ConfigFile}'{Environment.NewLine}{e}");
+                _returnCode = -1;
+                return;
+            }
 
             if (config.Database != null)
             {
