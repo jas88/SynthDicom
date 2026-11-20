@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BadDicom reports an empty `BadDicom.yaml`, or one that holds only comments, as a configuration error and exits with -1, like any other unusable `BadDicom.yaml`. It crashed with a `NullReferenceException`
 - BadDicom reports a UID list file named in `BadDicom.yaml` that it can't read, and exits with -1, like any other unusable `BadDicom.yaml`. It crashed with an `UnauthorizedAccessException`
 - BadDicom reports a table template that is empty, holds only comments or has no `Tables` as a template error, and exits with -2 before it connects to the database. It failed later with a `NullReferenceException`, and exit code 3, once it had connected
+- BadDicom no longer silently skips a UID list file it isn't allowed to read. It checked for the file with `File.Exists`, which also returns false for a file the caller can't read. It now reads the file, reports any failure other than a missing file, and exits with -1. A UID list file that doesn't exist is still skipped, as documented
 
 
 ## [2.0.1] - 2026-11-16
