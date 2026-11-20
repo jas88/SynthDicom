@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BadDicom no longer silently runs without its configuration when it isn't allowed to read `BadDicom.yaml`, which `File.Exists` reported as missing. It now reads the file, reports the error and exits with -1. Only a `BadDicom.yaml` that doesn't exist means no configuration
 - BadDicom reports a table template it isn't allowed to read as a read error, with exit code -2, instead of saying the file doesn't exist, with exit code -1. That came from the same `File.Exists` check
 - BadDicom reports a table template path that can't name a file, such as one with a NUL character or one too long for the file system, as not a valid file path. It still exits with -1, as when the template is missing, but no longer says the file doesn't exist
+- BadDicom reports a UID list path that can't name a file, such as one with a NUL character or one too long for the file system, and exits with -1. It used to skip such a path silently, as if the file were missing
 
 
 ## [2.0.1] - 2026-11-16

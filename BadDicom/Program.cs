@@ -90,8 +90,9 @@ internal sealed class Program
             {
                 config.UIDs?.Load();
             }
-            // A UID list file named in the configuration exists but can't be read
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            // A UID list file named in the configuration exists but can't be read, or its path can't name a file,
+            // such as one with a NUL character (ArgumentException) or one too long (PathTooLongException, an IOException)
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
             {
                 Console.WriteLine($"Error reading the UID lists named in '{ConfigFile}'{Environment.NewLine}{e}");
                 _returnCode = -1;

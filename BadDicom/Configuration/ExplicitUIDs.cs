@@ -28,7 +28,8 @@ public sealed class ExplicitUIDs
     /// Loads the UID files referenced (if they exist) in the configuration
     /// and populates <see cref="UIDAllocator"/> with the values.
     /// A file that doesn't exist is skipped; one that exists but can't be read throws an
-    /// <see cref="IOException"/> or <see cref="UnauthorizedAccessException"/>.
+    /// <see cref="IOException"/> or <see cref="UnauthorizedAccessException"/>, and a path that can't name a file
+    /// throws an <see cref="ArgumentException"/> or <see cref="PathTooLongException"/>.
     /// </summary>
     public void Load()
     {
