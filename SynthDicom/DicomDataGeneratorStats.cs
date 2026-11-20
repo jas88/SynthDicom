@@ -71,27 +71,21 @@ internal sealed class DicomDataGeneratorStats
     /// <returns>Synthetic accession number string</returns>
     public static string GetRandomAccessionNumber(Random r) => $"T{r.Next(4)}{r.Next(2)}{r.Next(5)}H{r.Next(9999999)}";
 
+    /// <summary>
+    /// Builds <see cref="ModalityFrequency"/> from DicomDataGeneratorModalities.csv, which the source generator compiles into
+    /// <see cref="GeneratedModalities"/>. The modalities keep the CSV's row order, and the cumulative weights follow that
+    /// order, so reordering the CSV changes which modality a seeded <see cref="Random"/> picks.
+    /// </summary>
     private static (int MaxWeight, (int CumulativeWeight, ModalityStats Value)[] Items) InitializeModalityFrequency(Random r)
     {
-        var bucketList = new BucketList<ModalityStats>
+        var bucketList = new BucketList<ModalityStats>();
+        foreach (var (modality, frequency) in GeneratedModalities.ModalityFrequencies)
         {
-            { 182846, new ModalityStats("CT", 2, 0, 100, 0, r) },
-            { 53161, new ModalityStats("MR", 1, 0, 100, 10, r) },
-            { 3805, new ModalityStats("US", 1, 0, 100, 10, r) },
-            { 2639, new ModalityStats("PT", 1, 0, 100, 10, r) },
-            { 1949, new ModalityStats("CR", 1, 0, 100, 10, r) },
-            { 1511, new ModalityStats("XA", 1, 0, 100, 10, r) },
-            { 1206, new ModalityStats("RF", 1, 0, 100, 10, r) },
-            { 485, new ModalityStats("DX", 1, 0, 100, 10, r) },
-            { 391, new ModalityStats("OT", 1, 0, 100, 10, r) },
-            { 149, new ModalityStats("MG", 1, 0, 100, 10, r) },
-            { 92, new ModalityStats("IO", 1, 0, 100, 10, r) },
-            { 58, new ModalityStats("NM", 1, 0, 100, 10, r) },
-            { 23, new ModalityStats("PR", 1, 0, 100, 10, r) },
-            { 8, new ModalityStats("PX", 1, 0, 100, 10, r) },
-            { 1, new ModalityStats("SC", 1, 0, 100, 10, r) },
-            { 1, new ModalityStats("KO", 1, 0, 100, 10, r) }
-        };
+            var s = GeneratedModalities.Statistics[modality];
+            bucketList.Add(frequency, new ModalityStats(modality, s.AverageSeriesPerStudy, s.StandardDeviationSeriesPerStudy,
+                s.AverageImagesPerSeries, s.StandardDeviationImagesPerSeries, r));
+        }
+
         return ConvertToOptimized(bucketList);
     }
 
