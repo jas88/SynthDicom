@@ -24,16 +24,13 @@
   <!-- Test project package versions -->
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <!-- build-standards no longer adds coverlet; CI collects coverage with 'XPlat Code Coverage' -->
-    <PackageReference Include="coverlet.collector" PrivateAssets="All" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <!-- No IncludeAssets filter: build-standards runs the tests on Microsoft Testing Platform (NUnit runner), where
+         the generated extension registration needs the compile assets of the adapter's Microsoft.Testing.* dependencies -->
+    <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 </Project>

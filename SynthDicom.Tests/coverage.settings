@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings for Microsoft.Testing.Extensions.CodeCoverage. CI passes this file to the test run as its coverage settings. -->
+<Configuration>
+  <CodeCoverage>
+    <ModulePaths>
+      <Exclude>
+        <!-- The tests reference BadDicom to test its configuration classes, but coverage measures the SynthDicom library alone -->
+        <ModulePath>.*[\\/]BadDicom\.dll$</ModulePath>
+      </Exclude>
+    </ModulePaths>
+    <!-- Workaround for https://github.com/microsoft/codecoverage/issues/203 -->
+    <!-- Use dynamic instrumentation: static instrumentation can crash the test host with BadImageFormatException (exit 134) on .NET 10 + NUnit -->
+    <!-- Note: dynamic instrumentation is not available on macOS arm64, where the coverage report is empty -->
+    <EnableStaticManagedInstrumentation>false</EnableStaticManagedInstrumentation>
+    <EnableStaticNativeInstrumentation>false</EnableStaticNativeInstrumentation>
+    <EnableDynamicManagedInstrumentation>true</EnableDynamicManagedInstrumentation>
+    <EnableDynamicNativeInstrumentation>false</EnableDynamicNativeInstrumentation>
+  </CodeCoverage>
+</Configuration>

@@ -3,8 +3,6 @@
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
     <IsPublishable>false</IsPublishable>
-    <!-- Coverage settings: measure the SynthDicom library, not BadDicom -->
-    <RunSettingsFilePath>$(MSBuildProjectDirectory)/coverage.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>
