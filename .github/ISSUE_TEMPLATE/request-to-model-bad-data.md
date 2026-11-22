@@ -8,11 +8,14 @@ assignees: ''
 
 ---
 
-### Tag
+## Tag
+
 Which tag or tags was the problem data found in e.g. PatientID
 
-### Affected Modalities
+## Affected Modalities
+
 Was this seen in a single file or multiple files, which dicom modalities was the problem seen in
 
-### Description
+## Description
+
 Describe the nature of the problem e.g. null terminator character before patient identifier in the PatientID field
