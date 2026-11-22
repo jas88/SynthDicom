@@ -13,9 +13,8 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
     <PackageVersion Include="NUnit" Version="5.0.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.7.0" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
-    <PackageVersion Include="coverlet.collector" Version="10.1.1" />
-    <!-- Referenced by build-standards shared props for test projects; coverage is still collected with coverlet -->
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.3.1" />
+    <!-- Referenced by build-standards shared props for test projects; collects the coverage that CI uploads -->
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
 
     <!-- Source Generators -->
