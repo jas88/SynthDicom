@@ -1,13 +1,14 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
 
 ### Changed
+
 - **BREAKING** (seeded output): for the same `-s` seed (or seeded `Random`), the tag values listed below differ from earlier versions, because of the fixes under Fixed. All other seeded tag values are unchanged, and seeded runs are now reproducible within this version for every modality. DICOM UIDs are still never affected by the seed
   - Every study: `NumberOfStudyRelatedInstances` holds the study's number of images instead of 0. A run of only CT studies, as BadDicom makes by default, changes in nothing else unless `MaximumImages` cuts a study short
   - A study that `MaximumImages` cuts short: `NumberOfStudyRelatedInstances` holds the number of images written, and the series it cuts short holds the number of its images written in `NumberOfSeriesRelatedInstances`
@@ -16,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A `Study` given your own `ModalityStats`: its numbers of series and images and, for CT, its `StudyDescription`, `SeriesDescription` and `BodyPartExamined` can change, and so can every study made after it from the same `Random`. None of these change if the `ModalityStats` holds the same `Random` as the `Study` and both its standard deviations are above 0, or holds another `Random` and both are 0
 
 ### Fixed
+
 - Seeded runs now repeat their image counts. `Study` drew the number of series and images from the `Random` held by its `ModalityStats`, and the built-in modalities held an unseeded one, so with the same seed every modality except CT got different numbers of images in each run, despite the 2.0.0 note that seeded runs are reproducible. `Study` now draws the counts from the `Random` it is given, and makes no draw when a standard deviation is 0 (every series count, and CT's image count); the `Random` given to `ModalityStats` is no longer used
 - Every image now records its study's `NumberOfStudyRelatedInstances`. Images made through `Study`, and so by `DicomDataGenerator` and BadDicom (including the study CSV), always had 0, because each series made its images before the study set its count
 - A study cut short by `MaximumImages` now records the number of images actually written in `NumberOfStudyRelatedInstances`, and the series it cuts short records the number of its images written in `NumberOfSeriesRelatedInstances`, instead of the numbers generated
@@ -28,17 +30,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BadDicom reports a table template path that can't name a file, such as one with a NUL character or one too long for the file system, as not a valid file path. It still exits with -1, as when the template is missing, but no longer says the file doesn't exist
 - BadDicom reports a UID list path that can't name a file, such as one with a NUL character or one too long for the file system, and exits with -1. It used to skip such a path silently, as if the file were missing
 
-
 ## [2.0.1] - 2026-11-16
 
 ### Fixed
+
 - Require `SynthEHR.Core` 3.1.0 (previously 3.0.1). SynthEHR.Core 3.0.0 and 3.0.1 are deprecated: their generated EHR data classes returned corrupted text after any non-ASCII character (most prescribing names and descriptions) and culture-dependent numbers. SynthDicom's own output was not affected, as it only uses SynthEHR's person, CHI and address generation, but applications that also generate SynthEHR datasets now resolve a fixed version.
 - 3.1.0 also matches SynthDicom's target frameworks (`net10.0`, `net11.0`)
-
 
 ## [2.0.0] - 2026-11-15
 
 ### Changed
+
 - Switch from `HIC.SynthEHR` 2.0.1 to `SynthEHR.Core` 3.0.1 (jas88 fork)
 - **BREAKING** (seeded output): for the same `-s` seed, generated `PatientID` (CHI) values differ from earlier versions, because SynthEHR 3.0 fixed off-by-one ranges in its CHI digit generation. All other seeded tag values are unchanged, and seeded runs remain reproducible within this version. DICOM UIDs are still never affected by the seed
 - Reference `CsvHelper` 33.0.1 directly (previously only a transitive dependency of `HIC.SynthEHR`)
@@ -51,10 +53,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump fo-dicom from 5.2.1 to 5.2.6 (required by DicomTypeTranslation 5.0.1)
 
 ### Security
+
 - Pin transitive FAnsiSql.Legacy to 3.7.0, which brings patched MySqlConnector 2.6.2 (GHSA-473q-m89c-ghf8), System.Security.Cryptography.Pkcs 10.0.14 (GHSA-846f-f764-76mx) and SQLitePCLRaw 3.0.5 (GHSA-2m69-gcr7-jv3q)
 - Remove the redundant `Microsoft.SourceLink.GitHub` package reference (Source Link is built into the .NET 8+ SDK), which drops the build-time `Microsoft.Build.Tasks.Git` 8.0.0 dependency (GHSA-23fw-v26w-5fgq)
 
 ### Removed
+
 - SixLabors.ImageSharp and SixLabors.ImageSharp.Drawing dependencies
 - Unused internal `BitmapToDicom.ConvertToMultiFrame`
 - Transitive `MongoDB.Driver` dependency of BadDicom, and with it `SharpCompress`, `DnsClient`, `Snappier` and `ZstdSharp.Port`
@@ -64,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 🎉 First Major Release - Complete Modernization
 
 **BREAKING CHANGES:**
+
 - Project renamed from BadMedicine.Dicom to SynthDicom
 - **Package ID changed**: HIC.BadMedicine.Dicom → SynthDicom
 - Upgraded to .NET 9 (net9.0)
@@ -71,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - NuGet package now published as `SynthDicom` (not HIC.SynthDicom)
 
 ### Added
+
 - **Async Streaming**: IAsyncEnumerable<T> support for memory-efficient large dataset generation
 - **Source Generators**: CSV-driven compile-time code generation (eliminates 2,053 lines of manual code)
 - **ArrayPool<T>**: Memory pooling for 20-30% reduction in GC pressure
@@ -80,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-frame DICOM Support**: Generate multi-frame DICOM images from bitmap sequences for dynamic imaging
 
 ### Changed
+
 - Target framework: net8.0 → net9.0
 - Language features: C# 11 → C# 13
 - All nullable reference warnings fixed
@@ -94,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TreatWarningsAsErrors enabled
 
 ### Performance
+
 - 20-35% memory reduction in hot paths
 - 30-40% faster string operations
 - 15-20% faster LINQ operations
@@ -101,12 +109,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Binary Search Optimization**: O(log n) weighted random selection for modality, study descriptions, and DescBodyPart (2000+ entries)
 
 ### Infrastructure
+
 - CI/CD optimized: CodeQL integrated into test workflow
 - Dependabot: weekly updates for nuget, github-actions, dotnet-sdk
 - Source generators eliminate manual data maintenance
 - GitHub Actions use global.json for SDK version
 
 ### Dependencies
+
 - SixLabors.ImageSharp: 3.1.7 → 3.1.11 (security fix NU1902)
 - SixLabors.ImageSharp.Drawing: 2.1.5 → 2.1.7
 - fo-dicom: 5.2.1
@@ -143,7 +153,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump SixLabors.ImageSharp.Drawing from 1.0.0 to 2.1.2
 - Bump Vecc.YamlDotNet.Analyzers.StaticGenerator from 13.4.0 to 13.5.1
 - Bump YamlDotNet from 12.0.2 to 15.1.6
-
 
 ## [0.0.16] - 2023-10-04
 
@@ -191,7 +200,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump DicomTypeTranslation from 3.0.0 to 4.0.0
 - Bump NUnit from 3.13.2 to 3.13.3
 - Bump Microsoft.NET.Test.Sdk from 17.0.0 to 17.1.0
-
 
 ## [0.0.10] - 2022-02-17
 
@@ -246,42 +254,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated dependencies to latest versions (see [Packages.md](./Packages.md))
 
-
 ## [0.0.5] - 2020-01-30
 
-## Added
+### Added
 
 - Added direct to database mode for CLI application (`BadDicom` only i.e. not part of the nuget package).
 
-## Changed
+### Changed
 
 - Changed number of images per series to 100 for CT
 
 ## [0.0.4] - 2019-10-28
 
-## Changed
+### Changed
 
 - Updated dependencies to latest fo Dicom library 4.0.3
 
-## Fixed
+### Fixed
 
 - Fixed dodgy tags in test data generated which results in broken images with fo Dicom 4.0.3
 
 ## [0.0.3] - 2019-10-28
 
-### Added 
+### Added
 
- - Added Csv mode where by dicom tags are output in full to series/study/instance level CSV files
+- Added Csv mode where by dicom tags are output in full to series/study/instance level CSV files
 
 ## [0.0.2] - 2019-07-16
 
-### Added 
- 
+### Added
+
 - Xml Documentation now built/shipped with API
 
 ## [0.0.1] - 2019-07-03
 
-### Added 
+### Added
 
 - Command Line Executable
 - Support for CT dicom image generation
