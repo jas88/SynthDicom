@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-23
+
 ### Changed
 
 - **BREAKING** (seeded output): for the same `-s` seed (or seeded `Random`), the tag values listed below differ from earlier versions, because of the fixes under Fixed. All other seeded tag values are unchanged, and seeded runs are now reproducible within this version for every modality. DICOM UIDs are still never affected by the seed
@@ -296,7 +298,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for PatientAge, Modality, Address, UIDs, StudyDate/Time
 - Support for pixel data / NoPixels flag
 
-[Unreleased]: https://github.com/jas88/SynthDicom/compare/v2.0.1...main
+[Unreleased]: https://github.com/jas88/SynthDicom/compare/v2.1.0...main
+[2.1.0]: https://github.com/jas88/SynthDicom/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/jas88/SynthDicom/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/jas88/SynthDicom/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/jas88/SynthDicom/compare/v0.1.2...v1.0.0
