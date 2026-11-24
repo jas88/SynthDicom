@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.IO;
 using CsvHelper;
 
@@ -107,9 +106,9 @@ public partial class DicomDataGenerator
         if (OutputDir == null)
             return;
         // Create/open CSV files with proper disposal via using statements
-        _studyWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)), CultureInfo.InvariantCulture);
-        _seriesWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)), CultureInfo.InvariantCulture);
-        _imageWriter = new CsvWriter(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)), CultureInfo.InvariantCulture);
+        _studyWriter = CsvWriter.Create(new StreamWriter(Path.Join(OutputDir.FullName, StudyCsvFilename)));
+        _seriesWriter = CsvWriter.Create(new StreamWriter(Path.Join(OutputDir.FullName, SeriesCsvFilename)));
+        _imageWriter = CsvWriter.Create(new StreamWriter(Path.Join(OutputDir.FullName, ImageCsvFilename)));
 
         // Write header
         WriteData(_studyWriter, StudyTags.Select(i => i.DictionaryEntry.Keyword));
@@ -122,7 +121,7 @@ public partial class DicomDataGenerator
         foreach (var s in data)
             sw.WriteField(s);
 
-        sw.NextRecord();
+        sw.EndRecord();
     }
 
     private void AddDicomDatasetToCSV(DicomDataset ds, CsvWriter studies, CsvWriter series, CsvWriter images)
