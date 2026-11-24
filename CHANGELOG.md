@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A study of any built-in modality except CT: a new, now repeatable, number of images in each series, and so new `NumberOfSeriesRelatedInstances` and `NumberOfStudyRelatedInstances`. The first such study made from a `Random` changes in nothing else
   - Every study after the first such study from the same `Random`, as in a BadDicom run: drawing that study's number of images moves the `Random` on, so these studies can also differ in their patient (`PatientID`, `PatientName`, `PatientBirthDate`, `PatientAddress` and `PatientAge`), `StudyDate`, `StudyTime`, `SeriesDate`, `SeriesTime`, `AcquisitionDate`, `AcquisitionTime`, `AccessionNumber` and `StudyDescription`. With more than one modality, they can also differ in `Modality`, `ModalitiesInStudy`, `ImageType` and numbers of series and images, and a CT study in `SeriesDescription` and `BodyPartExamined`
   - A `Study` given your own `ModalityStats`: its numbers of series and images and, for CT, its `StudyDescription`, `SeriesDescription` and `BodyPartExamined` can change, and so can every study made after it from the same `Random`. None of these change if the `ModalityStats` holds the same `Random` as the `Study` and both its standard deviations are above 0, or holds another `Random` and both are 0
+- Bump `CsvHelper` from 33.0.1 to 34.1.0, moving the Csv output to its rewritten writer API. The CSV files written are unchanged
 
 ### Fixed
 
